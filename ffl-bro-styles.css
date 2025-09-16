@@ -1,0 +1,491 @@
+/**
+ * FFL-BRO Platform Styles
+ * Custom styles for the FFL-BRO WordPress plugin
+ */
+
+/* ================================================
+   Base Platform Styles
+   ================================================ */
+
+.ffl-bro-platform {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #1f2937;
+}
+
+.ffl-bro-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: #f9fafb;
+    border: 2px dashed #d1d5db;
+    border-radius: 0.5rem;
+    min-height: 200px;
+}
+
+.ffl-bro-loading h2 {
+    margin: 0 0 1rem 0;
+    color: #374151;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.ffl-bro-loading p {
+    margin: 0.25rem 0;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+/* ================================================
+   Admin Interface Styles
+   ================================================ */
+
+.ffl-bro-admin-container {
+    margin: 0;
+    padding: 0;
+}
+
+.ffl-bro-admin-container .wrap {
+    margin: 0;
+}
+
+.ffl-bro-admin-container h1,
+.ffl-bro-admin-container h2 {
+    margin-top: 0;
+}
+
+/* WordPress admin menu compatibility */
+#adminmenu .dashicons-store:before {
+    content: '\f522';
+}
+
+/* Admin notices */
+.ffl-bro-notice {
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+    border-left: 4px solid #2563eb;
+    background: #eff6ff;
+    border-radius: 0.25rem;
+}
+
+.ffl-bro-notice.error {
+    border-left-color: #dc2626;
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.ffl-bro-notice.success {
+    border-left-color: #059669;
+    background: #ecfdf5;
+    color: #065f46;
+}
+
+.ffl-bro-notice.warning {
+    border-left-color: #d97706;
+    background: #fffbeb;
+    color: #92400e;
+}
+
+/* ================================================
+   Component-Specific Styles
+   ================================================ */
+
+/* Quote Generator */
+.ffl-bro-quotes {
+    background: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.ffl-bro-quote-header {
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    color: white;
+    padding: 1.5rem;
+}
+
+.ffl-bro-quote-form {
+    padding: 1.5rem;
+}
+
+.ffl-bro-quote-summary {
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+    padding: 1.5rem;
+}
+
+/* Form 4473 */
+.ffl-bro-form4473 {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.ffl-bro-form4473-header {
+    background: #1f2937;
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.ffl-bro-form4473-steps {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    background: #f3f4f6;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.ffl-bro-form4473-step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.ffl-bro-form4473-step.active {
+    background: #2563eb;
+    color: white;
+}
+
+.ffl-bro-form4473-step.completed {
+    background: #059669;
+    color: white;
+}
+
+/* Inventory Management */
+.ffl-bro-inventory {
+    background: #ffffff;
+}
+
+.ffl-bro-inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.ffl-bro-inventory-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    transition: all 0.2s;
+}
+
+.ffl-bro-inventory-item:hover {
+    border-color: #2563eb;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Settings */
+.ffl-bro-settings {
+    background: #ffffff;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.ffl-bro-settings-tabs {
+    display: flex;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+.ffl-bro-settings-tab {
+    padding: 1rem 1.5rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-weight: 500;
+    color: #6b7280;
+    transition: all 0.2s;
+}
+
+.ffl-bro-settings-tab.active {
+    color: #2563eb;
+    border-bottom: 2px solid #2563eb;
+    background: #ffffff;
+}
+
+.ffl-bro-settings-content {
+    padding: 2rem;
+}
+
+/* ================================================
+   Responsive Design
+   ================================================ */
+
+@media (max-width: 768px) {
+    .ffl-bro-platform {
+        padding: 0.5rem;
+    }
+    
+    .ffl-bro-quote-header,
+    .ffl-bro-quote-form,
+    .ffl-bro-quote-summary {
+        padding: 1rem;
+    }
+    
+    .ffl-bro-form4473-steps {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .ffl-bro-settings-tabs {
+        flex-direction: column;
+    }
+    
+    .ffl-bro-settings-tab {
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .ffl-bro-settings-tab.active {
+        border-bottom: 1px solid #e5e7eb;
+        border-left: 3px solid #2563eb;
+    }
+}
+
+/* ================================================
+   Utility Classes
+   ================================================ */
+
+.ffl-bro-hidden {
+    display: none !important;
+}
+
+.ffl-bro-loading-spinner {
+    border: 2px solid #f3f4f6;
+    border-top: 2px solid #2563eb;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: ffl-bro-spin 1s linear infinite;
+}
+
+@keyframes ffl-bro-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.ffl-bro-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1;
+}
+
+.ffl-bro-badge.success {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.ffl-bro-badge.warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.ffl-bro-badge.error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.ffl-bro-badge.info {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+/* ================================================
+   Print Styles
+   ================================================ */
+
+@media print {
+    .ffl-bro-platform {
+        font-size: 12pt;
+        line-height: 1.4;
+    }
+    
+    .ffl-bro-quote-header {
+        background: #000 !important;
+        color: #fff !important;
+    }
+    
+    .ffl-bro-form4473 {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+    
+    .ffl-bro-settings,
+    .ffl-bro-inventory {
+        display: none;
+    }
+}
+
+/* ================================================
+   Dark Mode Support
+   ================================================ */
+
+@media (prefers-color-scheme: dark) {
+    .ffl-bro-platform {
+        color: #f3f4f6;
+    }
+    
+    .ffl-bro-loading {
+        background: #374151;
+        border-color: #4b5563;
+    }
+    
+    .ffl-bro-loading h2 {
+        color: #f3f4f6;
+    }
+    
+    .ffl-bro-loading p {
+        color: #d1d5db;
+    }
+    
+    .ffl-bro-quotes,
+    .ffl-bro-form4473,
+    .ffl-bro-inventory,
+    .ffl-bro-settings {
+        background: #1f2937;
+        border-color: #374151;
+    }
+    
+    .ffl-bro-inventory-item {
+        border-color: #4b5563;
+    }
+    
+    .ffl-bro-inventory-item:hover {
+        border-color: #60a5fa;
+    }
+    
+    .ffl-bro-settings-tabs {
+        background: #374151;
+        border-color: #4b5563;
+    }
+    
+    .ffl-bro-settings-tab {
+        color: #d1d5db;
+    }
+    
+    .ffl-bro-settings-tab.active {
+        color: #60a5fa;
+        background: #1f2937;
+    }
+}
+
+/* ================================================
+   WordPress Theme Compatibility
+   ================================================ */
+
+/* Override theme styles that might interfere */
+.ffl-bro-platform * {
+    box-sizing: border-box;
+}
+
+.ffl-bro-platform img {
+    max-width: 100%;
+    height: auto;
+}
+
+.ffl-bro-platform table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.ffl-bro-platform th,
+.ffl-bro-platform td {
+    text-align: left;
+    padding: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.ffl-bro-platform th {
+    font-weight: 600;
+    background: #f9fafb;
+}
+
+/* Ensure proper spacing in WordPress admin */
+.wp-admin .ffl-bro-platform {
+    margin-top: 1rem;
+}
+
+.wp-admin .ffl-bro-platform h1,
+.wp-admin .ffl-bro-platform h2,
+.wp-admin .ffl-bro-platform h3 {
+    color: inherit;
+}
+
+/* ================================================
+   Accessibility Improvements
+   ================================================ */
+
+.ffl-bro-platform:focus-within {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
+.ffl-bro-platform button:focus,
+.ffl-bro-platform input:focus,
+.ffl-bro-platform select:focus,
+.ffl-bro-platform textarea:focus {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
+.ffl-bro-platform .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .ffl-bro-platform {
+        background: #ffffff;
+        color: #000000;
+    }
+    
+    .ffl-bro-platform button,
+    .ffl-bro-platform input,
+    .ffl-bro-platform select {
+        border: 2px solid #000000;
+    }
+    
+    .ffl-bro-quote-header {
+        background: #000000 !important;
+        color: #ffffff !important;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .ffl-bro-platform *,
+    .ffl-bro-platform *::before,
+    .ffl-bro-platform *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .ffl-bro-loading-spinner {
+        animation: none;
+        border-top-color: transparent;
+    }
+}
