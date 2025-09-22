@@ -39,14 +39,6 @@ class FFLBROQuoteGeneratorAdvanced {
     }
     
     public function add_admin_menu() {
-        add_submenu_page(
-            'ffl-bro',
-            'Quote Generator Pro', 
-            'Quotes Pro', 
-            'manage_options', 
-            'ffl-bro-quotes-advanced', 
-            array($this, 'admin_page')
-        );
     }
     
     public function enqueue_scripts($hook) {

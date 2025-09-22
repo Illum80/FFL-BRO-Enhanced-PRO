@@ -11,12 +11,23 @@ if (!defined("ABSPATH")) exit;
 require_once plugin_dir_path(__FILE__) . "includes/distributors/lipseys.php";
 require_once plugin_dir_path(__FILE__) . "includes/quote-generator-advanced.php";
 
+// Load modules automatically
+if (is_dir(plugin_dir_path(__FILE__) . "modules/")) {
+    foreach (glob(plugin_dir_path(__FILE__) . "modules/*.php") as $module_file) {
+        require_once $module_file;
+    }
+}
+
 class FFLBroEnhancedPRO {
     public function __construct() {
+        add_action("admin_menu", array($this, "add_admin_menu"));
         add_action("admin_init", array($this, "admin_init"));
         add_action("admin_enqueue_scripts", array($this, "enqueue_scripts"));
     }
     
+    public function add_admin_menu() {
+        add_menu_page("FFL-BRO", "FFL-BRO", "manage_options", "ffl-bro", array($this, "settings_page"));
+    }
     
     public function admin_init() {
         register_setting("fflbro_settings", "fflbro_lipseys_email");
@@ -178,6 +189,13 @@ function handle_lipseys_connection() {
     // Test connection using your Lipseys API class
     require_once plugin_dir_path(__FILE__) . 'includes/distributors/lipseys.php';
 require_once plugin_dir_path(__FILE__) . "includes/quote-generator-advanced.php";
+
+// Load modules automatically
+if (is_dir(plugin_dir_path(__FILE__) . "modules/")) {
+    foreach (glob(plugin_dir_path(__FILE__) . "modules/*.php") as $module_file) {
+        require_once $module_file;
+    }
+}
     $lipseys = new LipseysAPI($email, $password);
     $result = $lipseys->test_connection();
     
@@ -211,6 +229,13 @@ function handle_lipseys_sku_test() {
     // Test SKU retrieval using Lipseys API class
     require_once plugin_dir_path(__FILE__) . 'includes/distributors/lipseys.php';
 require_once plugin_dir_path(__FILE__) . "includes/quote-generator-advanced.php";
+
+// Load modules automatically
+if (is_dir(plugin_dir_path(__FILE__) . "modules/")) {
+    foreach (glob(plugin_dir_path(__FILE__) . "modules/*.php") as $module_file) {
+        require_once $module_file;
+    }
+}
     $lipseys = new LipseysAPI($email, $password);
     $result = $lipseys->test_sku_retrieval();
     
@@ -220,11 +245,3 @@ require_once plugin_dir_path(__FILE__) . "includes/quote-generator-advanced.php"
         wp_send_json_error($result['message'] ?? 'Unknown SKU retrieval error');
     }
 }
-
-// Load Customer Management Module
-if (file_exists(plugin_dir_path(__FILE__) . "modules/customer-management.php")) {
-    require_once plugin_dir_path(__FILE__) . "modules/customer-management.php";
-}
-require_once plugin_dir_path(__FILE__) . 'modules/distributors/rsr-api.php';
-require_once plugin_dir_path(__FILE__) . 'modules/distributors/sports-south-api.php';
-require_once plugin_dir_path(__FILE__) . 'modules/admin-interface.php';
