@@ -26,7 +26,7 @@ class FFL_BRO_Form_4473_Processing {
         
         $charset_collate = $wpdb->get_charset_collate();
         
-        $form_4473_table = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}fflbro_form_4473 (
+        $form_4473_table = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}fflbro_form_4473_enhanced (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             form_number varchar(100) NOT NULL UNIQUE,
             customer_id mediumint(9),
@@ -106,7 +106,7 @@ class FFL_BRO_Form_4473_Processing {
         $form_number = $this->generate_form_number();
         
         $result = $wpdb->insert(
-            $wpdb->prefix . 'fflbro_form_4473',
+            $wpdb->prefix . 'fflbro_form_4473_enhanced',
             array(
                 'form_number' => $form_number,
                 'status' => 'draft',
@@ -141,9 +141,9 @@ class FFL_BRO_Form_4473_Processing {
     public function render_4473_page() {
         global $wpdb;
         
-        $total_forms = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_form_4473");
-        $pending_forms = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_form_4473 WHERE status IN ('draft', 'in_progress', 'pending_approval')");
-        $approved_forms = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_form_4473 WHERE status = 'approved'");
+        $total_forms = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_form_4473_enhanced");
+        $pending_forms = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_form_4473_enhanced WHERE status IN ('draft', 'in_progress', 'pending_approval')");
+        $approved_forms = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_form_4473_enhanced WHERE status = 'approved'");
         
         echo '<div class="wrap">';
         echo '<h1>🎯 Form 4473 Processing</h1>';
