@@ -228,3 +228,4 @@ if (file_exists(plugin_dir_path(__FILE__) . "modules/customer-management.php")) 
 require_once plugin_dir_path(__FILE__) . 'modules/distributors/rsr-api.php';
 require_once plugin_dir_path(__FILE__) . 'modules/distributors/sports-south-api.php';
 require_once plugin_dir_path(__FILE__) . 'modules/admin-interface.php';
+require_once plugin_dir_path(__FILE__) . "modules/form-4473-processing.php";
