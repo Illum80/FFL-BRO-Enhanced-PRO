@@ -2,7 +2,7 @@
 /*
 Plugin Name: FFL-BRO Enhanced PRO
 Description: Complete FFL business management platform - WORKING VERSION WITH TOKEN
-Version: 5.1.2
+Version: 5.1.3
 */
 
 if (!defined("ABSPATH")) exit;
