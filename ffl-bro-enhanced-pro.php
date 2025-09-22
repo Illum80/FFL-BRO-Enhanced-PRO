@@ -11,6 +11,13 @@ if (!defined("ABSPATH")) exit;
 require_once plugin_dir_path(__FILE__) . "includes/distributors/lipseys.php";
 require_once plugin_dir_path(__FILE__) . "includes/quote-generator-advanced.php";
 
+// Load modules automatically
+if (is_dir(plugin_dir_path(__FILE__) . "modules/")) {
+    foreach (glob(plugin_dir_path(__FILE__) . "modules/*.php") as $module_file) {
+        require_once $module_file;
+    }
+}
+
 class FFLBroEnhancedPRO {
     public function __construct() {
         add_action("admin_menu", array($this, "add_admin_menu"));
@@ -182,6 +189,13 @@ function handle_lipseys_connection() {
     // Test connection using your Lipseys API class
     require_once plugin_dir_path(__FILE__) . 'includes/distributors/lipseys.php';
 require_once plugin_dir_path(__FILE__) . "includes/quote-generator-advanced.php";
+
+// Load modules automatically
+if (is_dir(plugin_dir_path(__FILE__) . "modules/")) {
+    foreach (glob(plugin_dir_path(__FILE__) . "modules/*.php") as $module_file) {
+        require_once $module_file;
+    }
+}
     $lipseys = new LipseysAPI($email, $password);
     $result = $lipseys->test_connection();
     
@@ -215,6 +229,13 @@ function handle_lipseys_sku_test() {
     // Test SKU retrieval using Lipseys API class
     require_once plugin_dir_path(__FILE__) . 'includes/distributors/lipseys.php';
 require_once plugin_dir_path(__FILE__) . "includes/quote-generator-advanced.php";
+
+// Load modules automatically
+if (is_dir(plugin_dir_path(__FILE__) . "modules/")) {
+    foreach (glob(plugin_dir_path(__FILE__) . "modules/*.php") as $module_file) {
+        require_once $module_file;
+    }
+}
     $lipseys = new LipseysAPI($email, $password);
     $result = $lipseys->test_sku_retrieval();
     
