@@ -12,7 +12,7 @@ class FFL_BRO_Customer_Management {
 
     private function create_customer_tables() {
         global $wpdb;
-        $customers_table = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}fflbro_customers_v2 (
+        $customers_table = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}fflbro_customers_enhanced (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             customer_number varchar(50) NOT NULL UNIQUE,
             first_name varchar(100) NOT NULL,
@@ -55,9 +55,8 @@ class FFL_BRO_Customer_Management {
     private function create_customer() {
         global $wpdb;
         $customer_number = $this->generate_customer_number();
-        error_log("About to insert customer: " . print_r(array("customer_number" => $customer_number, "first_name" => $_POST["first_name"]), true));
         $result = $wpdb->insert(
-            $wpdb->prefix . 'fflbro_customers_v2',
+            $wpdb->prefix . 'fflbro_customers_enhanced',
             array(
                 'customer_number' => $customer_number,
                 'first_name' => sanitize_text_field($_POST['first_name']),
@@ -68,7 +67,6 @@ class FFL_BRO_Customer_Management {
             ),
             array('%s', '%s', '%s', '%s', '%s', '%s')
         );
-        error_log("Insert result: " . ($result ? "SUCCESS" : "FAILED") . " - Last error: " . $wpdb->last_error);
         if (!$result) {
             throw new Exception('Failed to create customer');
         }
@@ -92,8 +90,8 @@ class FFL_BRO_Customer_Management {
 
     public function render_customers_page() {
         global $wpdb;
-        $total_customers = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_customers_v2");
-        $active_customers = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_customers_v2 WHERE status = 'active'");
+        $total_customers = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_customers_enhanced");
+        $active_customers = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_customers_enhanced WHERE status = 'active'");
 
         echo '<div class="wrap">';
         echo '<h1>Customer Management</h1>';
@@ -176,7 +174,7 @@ class FFL_BRO_Customer_Management {
     public function ajax_get_customers() {
         check_ajax_referer('fflbro_nonce', 'nonce');
         global $wpdb;
-        $customers = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}fflbro_customers_v2 ORDER BY created_at DESC LIMIT 50");
+        $customers = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}fflbro_customers_enhanced ORDER BY created_at DESC LIMIT 50");
         wp_send_json_success($customers);
     }
 }
