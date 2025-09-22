@@ -2,9 +2,9 @@
 
 Professional WordPress plugin for FFL dealers with advanced quote generation and distributor integration.
 
-## 🚀 Current Version: 5.1.3
+## 🚀 Current Version: 5.1.4
 
-**Release Date:** 2025-09-21  
+**Release Date:** 2025-09-22  
 **Author:** JRNeefe@gmail.com  
 **Repository:** https://github.com/Illum80/ffl-bro-enhanced-pro
 
@@ -132,7 +132,7 @@ This project is licensed under the GPL v2 or later.
 
 **Developer:** JRNeefe@gmail.com  
 **Repository:** https://github.com/Illum80/ffl-bro-enhanced-pro  
-**Version:** 5.1.3
+**Version:** 5.1.4
 
 ---
 

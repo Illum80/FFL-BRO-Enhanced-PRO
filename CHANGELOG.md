@@ -4,6 +4,20 @@ All notable changes to FFL-BRO Enhanced PRO will be documented in this file.
 
 ## [Unreleased]
 
+## [5.1.4] - 2025-09-22
+
+### Added
+- New features and enhancements for this release
+
+### Changed
+- Updates and improvements
+
+### Fixed
+- Bug fixes and performance improvements
+
+
+## [Unreleased]
+
 ## [5.1.3] - 2025-09-21
 
 ### Added
