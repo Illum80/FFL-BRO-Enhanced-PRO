@@ -1,6 +1,3 @@
+*.backup*
 *.log
 *.tmp
-*.backup
-*.bak
-*~
-.DS_Store
