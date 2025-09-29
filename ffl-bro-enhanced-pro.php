@@ -1584,7 +1584,7 @@ class FFLBROEnhancedPRO {
         check_ajax_referer('fflbro_nonce', 'nonce');
         
         // Lipseys API credentials (replace with actual credentials)
-        $username = 'jrneefe@gmail.com';
+        $username = 'JRNeefe@gmail.com';
         $password = 'Rampone1214!';
         
         // Corrected endpoint - this is the fix!
