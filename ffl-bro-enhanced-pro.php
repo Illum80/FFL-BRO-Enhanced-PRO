@@ -245,8 +245,8 @@ class FFLBroEnhancedPro {
         global $wpdb;
         
         // Get statistics
-        $total_products = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_products");
-        $total_customers = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_customers");
+        $total_products = $wpdb->get_var("SELECT COUNT(*) FROM wp_fflbro_inventory");
+        $total_customers = $wpdb->get_var("SELECT COUNT(*) FROM main_fflbro_customers_enhanced");
         $total_quotes = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_quotes");
         $pending_forms = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_form4473 WHERE status = 'in_progress'");
         
@@ -418,7 +418,7 @@ class FFLBroEnhancedPro {
         echo '</div>';
         
         // Customer list
-        $customers = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}fflbro_customers ORDER BY date_created DESC LIMIT 10", ARRAY_A);
+        $customers = $wpdb->get_results("SELECT * FROM main_fflbro_customers_enhanced ORDER BY id DESC LIMIT 10", ARRAY_A);
         
         echo '<div class="customers-list-section">';
         echo '<h3>Recent Customers</h3>';
