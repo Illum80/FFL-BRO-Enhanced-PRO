@@ -838,5 +838,3 @@ add_action('admin_head', function() {
         </style>';
     }
 });
-
-require_once(__DIR__ . '/searchProducts-addon.php');
