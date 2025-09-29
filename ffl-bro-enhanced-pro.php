@@ -2,7 +2,7 @@
 /**
  * Plugin Name: FFL-BRO Enhanced PRO
  * Description: Complete professional FFL management system with multi-distributor integration, Form 4473 processing, and advanced quote generation
- * Version: 6.3.0-COMPLETE
+ * Version: 6.4.0
  * Author: NEEFECO ARMS
  * Text Domain: ffl-bro-enhanced-pro
  */
@@ -1585,7 +1585,7 @@ class FFLBROEnhancedPRO {
         
         // Lipseys API credentials (replace with actual credentials)
         $username = 'jrneefe@gmail.com';
-        $password = 'Apple123!';
+        $password = 'Rampone1214!';
         
         // Corrected endpoint - this is the fix!
         $url = 'https://api.lipseys.com/api/Integration/Authentication/Login';
@@ -1613,9 +1613,9 @@ class FFLBROEnhancedPRO {
         if ($response_code === 200) {
             $data = json_decode($body, true);
             
-            if (isset($data['Token'])) {
+            if (isset($data['token'])) {
                 wp_send_json_success(array(
-                    'token' => $data['Token'],
+                    'token' => $data['token'],
                     'products' => '16,887',
                     'debug' => $debug_info
                 ));
