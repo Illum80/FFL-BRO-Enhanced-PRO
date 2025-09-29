@@ -1,0 +1,14 @@
+# WordPress Plugin .gitignore
+*.log
+.DS_Store
+Thumbs.db
+node_modules/
+vendor/
+*.tmp
+*.cache
+.env
+*.backup
+*.bak
+*~
+.idea/
+.vscode/
