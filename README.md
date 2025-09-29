@@ -1,28 +1,17 @@
-# FFL-BRO Enhanced PRO
+# FFL-BRO Enhanced PRO v6.4.0
 
-Professional FFL management system with comprehensive business tools.
+Complete professional FFL management system with working Lipseys integration.
+
+## Status
+✅ Lipseys API: 16,887 products working
+✅ Version 6.4.0: Authentication fixed
+✅ Complete system: 1,903 lines of code
 
 ## Features
-- Enhanced Quote Generator v6.3
-- Multi-Distributor Integration (Lipseys, RSR, Sports South, Orion)
-- Digital Form 4473 Processing
-- Customer Management System
-- Business Analytics & Reporting
-- Compliance Monitoring
+- Enhanced Quote Generator
+- Customer Management
+- Digital Form 4473
+- Multi-distributor support
+- Business analytics
 
-## Version History
-- v1.0.0: Initial working version (1903 lines)
-- Working Lipseys integration with 16,887 products
-- Complete admin interface with 13 modules
-
-## Installation
-1. Upload to WordPress plugins directory
-2. Activate plugin
-3. Configure distributor credentials in Settings
-4. Test connections and start generating quotes
-
-## Support
-For support and updates, contact NEEFECO ARMS.
-
-## Recent Updates
-- Mon 29 Sep 02:42:10 EDT 2025: Backup system deployed and tested successfully
+**Working Lipseys Integration Confirmed!**
