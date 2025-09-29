@@ -599,13 +599,17 @@ class FFLBroEnhancedPro {
             'last_name' => sanitize_text_field($_POST['last_name']),
             'email' => sanitize_email($_POST['email']),
             'phone' => sanitize_text_field($_POST['phone']),
-            'address' => sanitize_textarea_field($_POST['address']),
+            'address_line1' => sanitize_textarea_field($_POST['address']),
             'city' => sanitize_text_field($_POST['city']),
             'state' => sanitize_text_field($_POST['state']),
-            'customer_type' => 'individual'
+            'customer_type' => 'individual',
+            'customer_code' => 'CUST' . date('Ymd') . rand(1000, 9999),
+            'status' => 'active',
+            'created_at' => current_time('mysql'),
+            'updated_at' => current_time('mysql')
         );
         
-        $result = $wpdb->insert("{$wpdb->prefix}fflbro_customers", $customer_data);
+        $result = $wpdb->insert("main_fflbro_customers_enhanced", $customer_data);
         
         if ($result) {
             wp_send_json_success(array('message' => 'Customer saved successfully!'));
