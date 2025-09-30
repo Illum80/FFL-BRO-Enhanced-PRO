@@ -1,4 +1,4 @@
-const { useState } = React;
+const { useState, useEffect } = React;
 
 const QuoteGenerator = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -9,33 +9,69 @@ const QuoteGenerator = () => {
     const [activeTab, setActiveTab] = useState('search');
     const [savedQuoteNumber, setSavedQuoteNumber] = useState('');
 
+    // Live search as user types (debounced)
+    useEffect(() => {
+        if (searchTerm.length < 3) {
+            setSearchResults([]);
+            return;
+        }
+
+        const delaySearch = setTimeout(() => {
+            handleSearch();
+        }, 500); // Wait 500ms after user stops typing
+
+        return () => clearTimeout(delaySearch);
+    }, [searchTerm]);
+
     const handleSearch = async () => {
-        if (!searchTerm.trim()) { alert('Please enter a search term'); return; }
+        if (searchTerm.length < 3) {
+            alert('Please enter at least 3 characters');
+            return;
+        }
+
         setLoading(true);
         try {
             const formData = new FormData();
             formData.append('action', 'fflbro_search_products');
             formData.append('nonce', fflbroQuote.nonce);
             formData.append('search', searchTerm);
-            const response = await fetch(fflbroQuote.ajaxurl, { method: 'POST', body: formData });
+
+            const response = await fetch(fflbroQuote.ajaxurl, {
+                method: 'POST',
+                body: formData
+            });
+
             const data = await response.json();
-            if (data.success) { setSearchResults(data.data.products); } 
-            else { alert('Search failed: ' + (data.data?.message || 'Unknown error')); }
-        } catch (error) { alert('Search failed: ' + error.message); } 
-        finally { setLoading(false); }
+            
+            if (data.success) {
+                setSearchResults(data.data.products);
+            } else {
+                console.error('Search error:', data);
+                setSearchResults([]);
+            }
+        } catch (error) {
+            console.error('Search failed:', error);
+            setSearchResults([]);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const addToQuote = (product, dist) => {
         const markup = parseFloat(fflbroQuote.settings[dist.distributor + '_markup'] || 15);
         const cost = parseFloat(dist.price);
         const retailPrice = cost * (1 + markup / 100);
+        
         setQuoteItems(prev => [...prev, {
             id: Date.now() + '-' + dist.item_number,
             product: { description: product.description, manufacturer: product.manufacturer },
             distributor: dist.distributor,
             item_number: dist.item_number,
-            cost, markup_percent: markup, retail_price: retailPrice,
-            quantity: 1, line_total: retailPrice
+            cost, 
+            markup_percent: markup, 
+            retail_price: retailPrice,
+            quantity: 1, 
+            line_total: retailPrice
         }]);
         setActiveTab('quote');
     };
@@ -58,20 +94,28 @@ const QuoteGenerator = () => {
     const saveQuote = async () => {
         if (quoteItems.length === 0) { alert('Please add items'); return; }
         if (!customerInfo.name || !customerInfo.email) { alert('Please enter customer info'); return; }
+        
         setLoading(true);
         try {
             const formData = new FormData();
             formData.append('action', 'fflbro_save_quote');
             formData.append('nonce', fflbroQuote.nonce);
             formData.append('quote_data', JSON.stringify({ customer: customerInfo, items: quoteItems }));
+            
             const response = await fetch(fflbroQuote.ajaxurl, { method: 'POST', body: formData });
             const data = await response.json();
+            
             if (data.success) {
                 setSavedQuoteNumber(data.data.quote_number);
                 alert('Quote saved! #' + data.data.quote_number);
-            } else { alert('Failed to save'); }
-        } catch (error) { alert('Error: ' + error.message); } 
-        finally { setLoading(false); }
+            } else {
+                alert('Failed to save: ' + (data.data?.message || 'Unknown error'));
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const totals = calculateTotals();
@@ -90,19 +134,29 @@ const QuoteGenerator = () => {
         activeTab === 'search' ? React.createElement('div', { className: 'search-tab' },
             React.createElement('div', { className: 'search-box' },
                 React.createElement('input', {
-                    type: 'text', placeholder: 'Search products...',
-                    value: searchTerm, onChange: (e) => setSearchTerm(e.target.value),
-                    onKeyPress: (e) => e.key === 'Enter' && handleSearch(),
+                    type: 'text', 
+                    placeholder: 'Start typing to search products... (min 3 characters)',
+                    value: searchTerm, 
+                    onChange: (e) => setSearchTerm(e.target.value),
                     className: 'search-input'
                 }),
                 React.createElement('button', {
-                    onClick: handleSearch, disabled: loading, className: 'search-button'
-                }, loading ? 'Searching...' : 'Search All Distributors')
+                    onClick: handleSearch, 
+                    disabled: loading || searchTerm.length < 3, 
+                    className: 'search-button'
+                }, loading ? 'Searching...' : 'Search Products')
+            ),
+            loading && React.createElement('div', { style: { textAlign: 'center', padding: '2rem' } },
+                React.createElement('p', null, 'Searching across all distributors...')
             ),
             React.createElement('div', { className: 'search-results' },
-                searchResults.length === 0 ? 
+                !loading && searchResults.length === 0 && searchTerm.length < 3 ? 
                     React.createElement('div', { className: 'no-results' },
-                        React.createElement('p', null, 'Enter search term to find products')
+                        React.createElement('p', null, 'Start typing to search products (minimum 3 characters)')
+                    ) :
+                !loading && searchResults.length === 0 && searchTerm.length >= 3 ?
+                    React.createElement('div', { className: 'no-results' },
+                        React.createElement('p', null, `No products found for "${searchTerm}"`)
                     ) :
                     searchResults.map((product, idx) =>
                         React.createElement('div', { key: idx, className: 'product-card' },
@@ -140,15 +194,18 @@ const QuoteGenerator = () => {
                 React.createElement('div', { className: 'customer-form' },
                     React.createElement('input', {
                         type: 'text', placeholder: 'Customer Name',
-                        value: customerInfo.name, onChange: (e) => setCustomerInfo({...customerInfo, name: e.target.value})
+                        value: customerInfo.name, 
+                        onChange: (e) => setCustomerInfo({...customerInfo, name: e.target.value})
                     }),
                     React.createElement('input', {
                         type: 'email', placeholder: 'Email',
-                        value: customerInfo.email, onChange: (e) => setCustomerInfo({...customerInfo, email: e.target.value})
+                        value: customerInfo.email, 
+                        onChange: (e) => setCustomerInfo({...customerInfo, email: e.target.value})
                     }),
                     React.createElement('input', {
                         type: 'tel', placeholder: 'Phone',
-                        value: customerInfo.phone, onChange: (e) => setCustomerInfo({...customerInfo, phone: e.target.value})
+                        value: customerInfo.phone, 
+                        onChange: (e) => setCustomerInfo({...customerInfo, phone: e.target.value})
                     })
                 )
             ),
@@ -156,7 +213,7 @@ const QuoteGenerator = () => {
                 React.createElement('h3', null, 'Quote Items'),
                 quoteItems.length === 0 ? 
                     React.createElement('div', { className: 'no-items' },
-                        React.createElement('p', null, 'No items yet')
+                        React.createElement('p', null, 'No items yet. Search for products to add them.')
                     ) :
                     React.createElement('div', null,
                         React.createElement('table', { className: 'quote-items-table' },
