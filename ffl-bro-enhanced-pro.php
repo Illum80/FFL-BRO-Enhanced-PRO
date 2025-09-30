@@ -722,6 +722,7 @@ class FFLBroEnhancedPro {
              LIMIT 10",
             '%' . $search_term . '%',
             '%' . $search_term . '%',
+            '%' . $search_term . '%',
             '%' . $search_term . '%'
         ), ARRAY_A);
         
