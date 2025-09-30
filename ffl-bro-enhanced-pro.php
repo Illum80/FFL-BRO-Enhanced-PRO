@@ -847,7 +847,7 @@ class FFLBroEnhancedPro {
                     })
                     .then(response => response.json())
                     .then(data => {
-                        alert(data.success ? "Davidsons Upload: " + data.data.message : "Upload Error: " + data.data);
+                        alert(data.success ? "✅ " + (data.data.message || data.data) : "❌ Upload Error: " + (typeof data.data === "string" ? data.data : (data.data.message || "Unknown error")));
                         if (data.success) location.reload();
                     });
                 }
