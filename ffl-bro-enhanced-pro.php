@@ -335,6 +335,9 @@ class FFLBroEnhancedPro {
             } elseif ($distributor === 'rsr_group') {
                 echo '<button class="button button-primary" onclick="testRSR()">Test FTP</button>';
                 echo '<button class="button button-secondary" onclick="syncRSR()">Sync Catalog</button>';
+            } elseif ($distributor === 'davidsons') {
+                echo '<button class="button button-primary" onclick="uploadDavidsonsCSV()">Upload CSV</button>';
+                echo '<button class="button button-secondary" onclick="viewDavidsonsInventory()">View Inventory</button>';
             } else {
                 echo '<button class="button" onclick="alert(\'Configure ' . $display_name . ' API credentials in Settings first!\')">Configure</button>';
             }
