@@ -1,38 +1,43 @@
 <?php
-if (!defined('ABSPATH')) exit;
-
 class FFLBRO_Davidsons_Integration {
     
     public function __construct() {
-        add_action('wp_ajax_upload_davidsons_csv', array($this, 'upload_csv'));
-        add_action('wp_ajax_get_davidsons_inventory', array($this, 'get_inventory'));
+        add_action('wp_ajax_davidsons_upload_csv', array($this, 'upload_csv'));
+        add_action('wp_ajax_davidsons_get_inventory', array($this, 'get_inventory'));
     }
     
     public function upload_csv() {
         check_ajax_referer('fflbro_working_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(array('message' => 'Insufficient permissions'));
+            wp_send_json_error('Insufficient permissions');
+            return;
         }
         
-        if (!isset($_FILES['csv_file']) || $_FILES['csv_file']['error'] !== UPLOAD_ERR_OK) {
-            wp_send_json_error(array('message' => 'No file uploaded or upload error'));
+        if (empty($_FILES['csv_file'])) {
+            wp_send_json_error('No file uploaded');
+            return;
         }
         
+        $csv_type = sanitize_text_field($_POST['csv_type'] ?? 'inventory');
         $file = $_FILES['csv_file'];
-        $csv_type = sanitize_text_field($_POST['csv_type'] ?? '1');
         
-        // Read file
-        $file_content = file_get_contents($file['tmp_name']);
-        if ($file_content === false) {
-            wp_send_json_error(array('message' => 'Could not read uploaded file'));
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            wp_send_json_error('File upload error: ' . $file['error']);
+            return;
         }
         
-        // Process based on type
-        if ($csv_type === '1') {
-            $result = $this->process_inventory_csv($file_content);
+        if ($file['type'] !== 'text/csv' && !str_ends_with($file['name'], '.csv')) {
+            wp_send_json_error('Invalid file type. Please upload a CSV file.');
+            return;
+        }
+        
+        $content = file_get_contents($file['tmp_name']);
+        
+        if ($csv_type === 'inventory') {
+            $result = $this->process_inventory_csv($content);
         } else {
-            $result = $this->process_quantity_csv($file_content);
+            $result = $this->process_quantity_csv($content);
         }
         
         if ($result['success']) {
@@ -41,7 +46,7 @@ class FFLBRO_Davidsons_Integration {
                 'count' => $result['count']
             ));
         } else {
-            wp_send_json_error(array('message' => $result['message']));
+            wp_send_json_error($result['message']);
         }
     }
     
@@ -50,48 +55,38 @@ class FFLBRO_Davidsons_Integration {
         $table = $wpdb->prefix . 'fflbro_products';
         
         $lines = explode("\n", $content);
-        $headers = str_getcsv(array_shift($lines));
+        array_shift($lines);
         
         $count = 0;
-        $markup = floatval(get_option('fflbro_davidsons_markup', 15));
-        
         foreach ($lines as $line) {
             if (empty(trim($line))) continue;
-            
             $data = str_getcsv($line);
-            if (count($data) < 3) continue;
+            if (count($data) < 5) continue;
             
-            // Map CSV columns (adjust based on actual Davidsons format)
-            $product = array(
+            $product_data = array(
                 'distributor' => 'davidsons',
                 'item_number' => $data[0] ?? '',
-                'description' => $data[1] ?? '',
-                'manufacturer' => $data[2] ?? '',
+                'upc' => $data[1] ?? '',
+                'description' => $data[2] ?? '',
                 'price' => floatval($data[3] ?? 0),
                 'quantity' => intval($data[4] ?? 0),
                 'updated_at' => current_time('mysql')
             );
             
-            // Insert or update
             $exists = $wpdb->get_var($wpdb->prepare(
                 "SELECT id FROM $table WHERE distributor = 'davidsons' AND item_number = %s",
-                $product['item_number']
+                $product_data['item_number']
             ));
             
             if ($exists) {
-                $wpdb->update($table, $product, array('id' => $exists));
+                $wpdb->update($table, $product_data, array('id' => $exists));
             } else {
-                $wpdb->insert($table, $product);
+                $wpdb->insert($table, $product_data);
             }
-            
             $count++;
         }
         
-        return array(
-            'success' => true,
-            'message' => "Processed $count products from inventory CSV",
-            'count' => $count
-        );
+        return array('success' => true, 'message' => "Successfully imported $count products", 'count' => $count);
     }
     
     private function process_quantity_csv($content) {
@@ -99,56 +94,42 @@ class FFLBRO_Davidsons_Integration {
         $table = $wpdb->prefix . 'fflbro_products';
         
         $lines = explode("\n", $content);
-        array_shift($lines); // Remove header
+        array_shift($lines);
         
         $count = 0;
-        
         foreach ($lines as $line) {
             if (empty(trim($line))) continue;
-            
             $data = str_getcsv($line);
             if (count($data) < 2) continue;
             
-            $item_number = $data[0] ?? '';
-            $quantity = intval($data[1] ?? 0);
-            
             $updated = $wpdb->update(
                 $table,
-                array('quantity' => $quantity, 'updated_at' => current_time('mysql')),
-                array('distributor' => 'davidsons', 'item_number' => $item_number)
+                array('quantity' => intval($data[1] ?? 0), 'updated_at' => current_time('mysql')),
+                array('distributor' => 'davidsons', 'item_number' => $data[0] ?? '')
             );
-            
             if ($updated) $count++;
         }
         
-        return array(
-            'success' => true,
-            'message' => "Updated quantities for $count products",
-            'count' => $count
-        );
+        return array('success' => true, 'message' => "Updated $count products", 'count' => $count);
     }
     
     public function get_inventory() {
         check_ajax_referer('fflbro_working_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
-            wp_send_json_error(array('message' => 'Insufficient permissions'));
+            wp_send_json_error('Insufficient permissions');
+            return;
         }
         
         global $wpdb;
         $table = $wpdb->prefix . 'fflbro_products';
         
-        $count = $wpdb->get_var(
-            "SELECT COUNT(*) FROM $table WHERE distributor = 'davidsons'"
-        );
-        
-        $last_updated = $wpdb->get_var(
-            "SELECT MAX(updated_at) FROM $table WHERE distributor = 'davidsons'"
-        );
+        $count = $wpdb->get_var("SELECT COUNT(*) FROM $table WHERE distributor = 'davidsons'");
+        $last_updated = $wpdb->get_var("SELECT MAX(updated_at) FROM $table WHERE distributor = 'davidsons'");
         
         wp_send_json_success(array(
             'count' => intval($count),
-            'last_updated' => $last_updated
+            'last_updated' => $last_updated ? date('M j, Y g:i A', strtotime($last_updated)) : 'Never'
         ));
     }
 }
