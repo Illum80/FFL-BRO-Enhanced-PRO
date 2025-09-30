@@ -977,3 +977,6 @@ add_action('admin_head', function() {
 
 require_once(__DIR__ . '/searchProducts-addon.php');
 require_once plugin_dir_path(__FILE__) . 'includes/distributors/davidsons.php';
+
+// Enhanced Quote Generator Module v7.2.0
+require_once plugin_dir_path(__FILE__) . 'includes/quote-generator/enhanced-quote-generator.php';
