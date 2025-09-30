@@ -197,7 +197,7 @@ class FFLBroEnhancedPro {
         
         // Only add missing distributors, preserve existing ones
         $existing = $wpdb->get_col("SELECT distributor FROM {$wpdb->prefix}fflbro_sync_progress");
-        $all_distributors = array('lipseys', 'rsr_group', 'orion');
+        $all_distributors = array('lipseys', 'rsr_group', 'orion', 'davidsons');
         
         foreach ($all_distributors as $dist) {
             if (!in_array($dist, $existing)) {
@@ -513,6 +513,16 @@ class FFLBroEnhancedPro {
         echo '<input type="submit" class="button button-primary" value="Save RSR Settings" />';
         echo '</form><br>';
         
+        echo '<h3>🏢 Davidsons Configuration</h3>';
+        echo '<form method="post" action="options.php">';
+        settings_fields('fflbro_settings');
+        echo '<table class="form-table">';
+        echo '<tr><th>API Status</th><td><span style="color:#d63638;">Not Connected - Using Manual CSV Upload</span></td></tr>';
+        echo '<tr><th>Markup %</th><td><input type="number" name="fflbro_davidsons_markup" value="' . esc_attr(get_option('fflbro_davidsons_markup', '15')) . '" step="0.1" class="small-text" />% above dealer cost</td></tr>';
+        echo '</table>';
+        echo '<input type="submit" class="button button-primary" value="Save Davidsons Settings" />';
+        echo '</form><br>';
+        
         echo '<h3>🏢 Business Information</h3>';
         echo '<form>';
         echo '<table class="form-table">';
@@ -713,7 +723,8 @@ class FFLBroEnhancedPro {
         $names = array(
             'lipseys' => 'Lipseys',
             'rsr_group' => 'RSR Group', 
-            'orion' => 'Orion'
+            'orion' => 'Orion',
+            'davidsons' => 'Davidsons'
         );
         
         return isset($names[$distributor]) ? $names[$distributor] : ucfirst($distributor);
@@ -723,7 +734,8 @@ class FFLBroEnhancedPro {
         $this->distributors = array(
             'lipseys' => array('name' => 'Lipseys', 'status' => 'connected'),
             'rsr_group' => array('name' => 'RSR Group', 'status' => 'ready'),
-            'orion' => array('name' => 'Orion', 'status' => 'ready')
+            'orion' => array('name' => 'Orion', 'status' => 'ready'),
+            'davidsons' => array('name' => 'Davidsons', 'status' => 'ready')
         );
     }
     
