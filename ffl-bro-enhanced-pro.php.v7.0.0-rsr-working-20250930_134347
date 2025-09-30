@@ -36,7 +36,6 @@ class FFLBroEnhancedPro {
         add_action('init', array($this, 'init'));
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
-        add_action('admin_init', array($this, 'register_settings'));
         
         // PRESERVED: Your working Lipseys sync handlers
         add_action('wp_ajax_fflbro_sync_lipseys', array($this, 'sync_lipseys_catalog'));
@@ -500,16 +499,7 @@ class FFLBroEnhancedPro {
         echo '<h3>🚛 Distributor APIs</h3>';
         echo '<p><strong>Lipseys:</strong> ✅ Connected and working (16,887 products synced)</p>';
         echo '<p><strong>RSR Group:</strong> Configure API credentials to enable</p>';
-        echo '<form method="post" action="options.php">';
-        settings_fields('fflbro_settings');
-        echo '<table class="form-table">';
-        echo '<tr><th>FTP Host</th><td><input type="text" name="fflbro_rsr_host" value="' . esc_attr(get_option('fflbro_rsr_host', 'ftp.rsrgroup.com')) . '" class="regular-text" readonly /></td></tr>';
-        echo '<tr><th>Account Number</th><td><input type="text" name="fflbro_rsr_user" value="' . esc_attr(get_option('fflbro_rsr_user', '67271')) . '" class="regular-text" readonly /></td></tr>';
-        echo '<tr><th>FTP Password</th><td><input type="password" name="fflbro_rsr_pass" value="' . esc_attr(get_option('fflbro_rsr_pass', 'h1dtuW5J')) . '" class="regular-text" readonly /></td></tr>';
-        echo '<tr><th>Markup %</th><td><input type="number" name="fflbro_rsr_markup" value="' . esc_attr(get_option('fflbro_rsr_markup', '15')) . '" step="0.1" class="small-text" />% above dealer cost</td></tr>';
-        echo '</table>';
-        echo '<input type="submit" class="button button-primary" value="Save RSR Settings" />';
-        echo '</form><br>';
+        echo '<p><strong>Orion:</strong> Configure API credentials to enable</p>';
         
         echo '<h3>🏢 Business Information</h3>';
         echo '<form>';
@@ -523,20 +513,6 @@ class FFLBroEnhancedPro {
         echo '</div>';
         
         echo '</div>';
-    }
-
-    public function register_settings() {
-        register_setting('fflbro_settings', 'fflbro_rsr_host');
-        register_setting('fflbro_settings', 'fflbro_rsr_port');
-        register_setting('fflbro_settings', 'fflbro_rsr_user');
-        register_setting('fflbro_settings', 'fflbro_rsr_pass');
-        register_setting('fflbro_settings', 'fflbro_rsr_markup');
-        register_setting('fflbro_settings', 'fflbro_rsr_auto_sync');
-        
-        // Register existing business settings too
-        register_setting('fflbro_settings', 'ffl_business_name');
-        register_setting('fflbro_settings', 'ffl_license_number');
-        register_setting('fflbro_settings', 'ffl_default_margin');
     }
     
     // PRESERVED: Your working Lipseys sync functions

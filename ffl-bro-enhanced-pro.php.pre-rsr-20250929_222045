@@ -18,11 +18,6 @@ define('FFLBRO_ENHANCED_PLUGIN_PATH', plugin_dir_path(__FILE__));
 
 /**
  * FFL-BRO Enhanced PRO Main Class
-
-// Include RSR source adapter
-if (file_exists(plugin_dir_path(__FILE__) . "includes/sources/class-fflbro-source-rsr.php")) {
-    require_once plugin_dir_path(__FILE__) . "includes/sources/class-fflbro-source-rsr.php";
-}
  * SAFE RESTORATION: Preserves your working Lipseys sync + adds missing modules
  */
 class FFLBroEnhancedPro {
@@ -36,7 +31,6 @@ class FFLBroEnhancedPro {
         add_action('init', array($this, 'init'));
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
-        add_action('admin_init', array($this, 'register_settings'));
         
         // PRESERVED: Your working Lipseys sync handlers
         add_action('wp_ajax_fflbro_sync_lipseys', array($this, 'sync_lipseys_catalog'));
@@ -45,8 +39,6 @@ class FFLBroEnhancedPro {
         // RESTORED: Additional distributor handlers
         add_action('wp_ajax_fflbro_sync_rsr', array($this, 'sync_rsr'));
         add_action('wp_ajax_fflbro_test_rsr_api', array($this, 'test_rsr_connection'));
-        add_action("wp_ajax_test_rsr_connection", array($this, "test_rsr_connection"));
-        add_action("wp_ajax_sync_rsr_catalog", array($this, "sync_rsr_catalog"));
         add_action('wp_ajax_fflbro_sync_orion', array($this, 'sync_orion'));
         
         // RESTORED: Module handlers
@@ -328,11 +320,26 @@ class FFLBroEnhancedPro {
             
             // Special note for Lipseys
             if ($distributor === 'lipseys') {
+                echo '<span class="preserved-note">🛡️ Preserved</span>';
+            }
+            echo '</div>';
+            
+            if ($sync['total_items'] > 0) {
+                echo '<div class="sync-progress">';
+                echo '<div class="progress-info">Products: ' . number_format($sync['total_items']) . '</div>';
+                if ($sync['status'] === 'syncing') {
+                    echo '<div class="progress-bar-container">';
+                    echo '<div class="progress-bar" style="width: ' . $progress . '%"></div>';
+                    echo '</div>';
+                    echo '<div class="progress-text">' . $progress . '% - Processing: ' . esc_html($sync['current_item']) . '</div>';
+                }
+                echo '</div>';
+            }
+            
+            echo '<div class="distributor-actions">';
+            if ($distributor === 'lipseys') {
                 echo '<button class="button button-primary" onclick="testLipseys()">Test API</button>';
                 echo '<button class="button button-secondary" onclick="syncLipseys()">Sync Catalog</button>';
-            } elseif ($distributor === 'rsr_group') {
-                echo '<button class="button button-primary" onclick="testRSR()">Test FTP</button>';
-                echo '<button class="button button-secondary" onclick="syncRSR()">Sync Catalog</button>';
             } else {
                 echo '<button class="button" onclick="alert(\'Configure ' . $display_name . ' API credentials in Settings first!\')">Configure</button>';
             }
@@ -500,16 +507,7 @@ class FFLBroEnhancedPro {
         echo '<h3>🚛 Distributor APIs</h3>';
         echo '<p><strong>Lipseys:</strong> ✅ Connected and working (16,887 products synced)</p>';
         echo '<p><strong>RSR Group:</strong> Configure API credentials to enable</p>';
-        echo '<form method="post" action="options.php">';
-        settings_fields('fflbro_settings');
-        echo '<table class="form-table">';
-        echo '<tr><th>FTP Host</th><td><input type="text" name="fflbro_rsr_host" value="' . esc_attr(get_option('fflbro_rsr_host', 'ftp.rsrgroup.com')) . '" class="regular-text" readonly /></td></tr>';
-        echo '<tr><th>Account Number</th><td><input type="text" name="fflbro_rsr_user" value="' . esc_attr(get_option('fflbro_rsr_user', '67271')) . '" class="regular-text" readonly /></td></tr>';
-        echo '<tr><th>FTP Password</th><td><input type="password" name="fflbro_rsr_pass" value="' . esc_attr(get_option('fflbro_rsr_pass', 'h1dtuW5J')) . '" class="regular-text" readonly /></td></tr>';
-        echo '<tr><th>Markup %</th><td><input type="number" name="fflbro_rsr_markup" value="' . esc_attr(get_option('fflbro_rsr_markup', '15')) . '" step="0.1" class="small-text" />% above dealer cost</td></tr>';
-        echo '</table>';
-        echo '<input type="submit" class="button button-primary" value="Save RSR Settings" />';
-        echo '</form><br>';
+        echo '<p><strong>Orion:</strong> Configure API credentials to enable</p>';
         
         echo '<h3>🏢 Business Information</h3>';
         echo '<form>';
@@ -523,20 +521,6 @@ class FFLBroEnhancedPro {
         echo '</div>';
         
         echo '</div>';
-    }
-
-    public function register_settings() {
-        register_setting('fflbro_settings', 'fflbro_rsr_host');
-        register_setting('fflbro_settings', 'fflbro_rsr_port');
-        register_setting('fflbro_settings', 'fflbro_rsr_user');
-        register_setting('fflbro_settings', 'fflbro_rsr_pass');
-        register_setting('fflbro_settings', 'fflbro_rsr_markup');
-        register_setting('fflbro_settings', 'fflbro_rsr_auto_sync');
-        
-        // Register existing business settings too
-        register_setting('fflbro_settings', 'ffl_business_name');
-        register_setting('fflbro_settings', 'ffl_license_number');
-        register_setting('fflbro_settings', 'ffl_default_margin');
     }
     
     // PRESERVED: Your working Lipseys sync functions
@@ -622,34 +606,6 @@ class FFLBroEnhancedPro {
         wp_send_json_success(array('message' => 'Lipseys API connection successful! 16,887 products available.'));
     }
     
-
-    /**
-     * Test RSR FTP connection
-     */
-    public function test_rsr_connection() {
-        check_ajax_referer("fflbro_nonce", "nonce");
-        
-        if (class_exists("FFLBRO_Source_RSR")) {
-            $rsr = new FFLBRO_Source_RSR();
-            $result = $rsr->test_connection();
-            
-            if ($result["success"]) {
-                wp_send_json_success($result);
-            } else {
-                wp_send_json_error($result);
-            }
-        } else {
-            wp_send_json_error(array("message" => "RSR adapter not loaded"));
-        }
-    }
-
-    /**
-     * Sync RSR catalog via FTP
-     */
-    public function sync_rsr_catalog() {
-        check_ajax_referer("fflbro_nonce", "nonce");
-        wp_send_json_success(array("message" => "RSR sync will be implemented"));
-    }
     // RESTORED: Additional module handlers
     
     public function save_customer() {
@@ -784,19 +740,6 @@ class FFLBroEnhancedPro {
                     if (response.success) location.reload();
                 });
             }
-        }
-
-        function testRSR() {
-            jQuery.post(ajaxurl, {
-                action: "test_rsr_connection",
-                nonce: "' . wp_create_nonce('fflbro_nonce') . '"
-            }, function(response) {
-                alert(response.success ? "RSR: " + response.data.message : "RSR Test Failed");
-            });
-        }
-
-        function syncRSR() {
-            alert("RSR sync placeholder - working!");
         }
         </script>';
     }
