@@ -1,8 +1,8 @@
 <?php
 /**
  * Enhanced Multi-Distributor Quote Generator Module
- * Version: 2.0.0
- * Uses real distributor data from Lipseys, RSR, and Davidsons
+ * Version: 2.0.0 - ADMIN ONLY
+ * Operator tool for creating quotes, not customer-facing
  */
 
 if (!defined('ABSPATH')) exit;
@@ -12,20 +12,101 @@ class FFLBRO_Enhanced_Quote_Generator {
     private $supported_distributors = array('lipseys', 'rsr', 'davidsons');
     
     public function __construct() {
-        // Register AJAX handlers
+        // Add admin menu item
+        add_action('admin_menu', array($this, 'add_admin_menu'));
+        
+        // Register AJAX handlers (admin only)
         add_action('wp_ajax_fflbro_search_products', array($this, 'search_products'));
         add_action('wp_ajax_fflbro_save_quote', array($this, 'save_quote'));
         add_action('wp_ajax_fflbro_load_quote', array($this, 'load_quote'));
         
-        // Register shortcode
-        add_shortcode('fflbro_quote_generator', array($this, 'render_quote_generator'));
-        
-        // Enqueue scripts and styles
-        add_action('wp_enqueue_scripts', array($this, 'enqueue_assets'));
+        // Enqueue scripts for admin only
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
     }
     
+    /**
+     * Add Quote Generator to FFL-BRO admin menu
+     */
+    public function add_admin_menu() {
+        add_submenu_page(
+            'fflbro-enhanced-pro',  // Parent menu slug
+            'Quote Generator',       // Page title
+            'Quote Generator',       // Menu title
+            'manage_options',        // Capability
+            'fflbro-quote-generator', // Menu slug
+            array($this, 'render_admin_page') // Callback
+        );
+    }
+    
+    /**
+     * Render admin page
+     */
+    public function render_admin_page() {
+        ?>
+        <div class="wrap">
+            <h1>📝 Smart Quote Generator</h1>
+            <p class="description">Search across Lipseys, RSR, and Davidsons to create professional quotes for customers</p>
+            
+            <div id="fflbro-quote-generator" class="fflbro-quote-generator-container">
+                <div id="quote-generator-app"></div>
+            </div>
+        </div>
+        <?php
+    }
+    
+    /**
+     * Enqueue admin assets
+     */
+    public function enqueue_admin_assets($hook) {
+        // Only load on our quote generator page
+        if ($hook !== 'ffl-bro-enhanced-pro_page_fflbro-quote-generator') {
+            return;
+        }
+        
+        // Enqueue React
+        wp_enqueue_script('react', 'https://unpkg.com/react@18/umd/react.production.min.js', array(), '18.0.0', true);
+        wp_enqueue_script('react-dom', 'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js', array('react'), '18.0.0', true);
+        
+        // Enqueue quote generator script
+        wp_enqueue_script(
+            'fflbro-quote-generator',
+            plugins_url('includes/quote-generator/quote-generator.js', dirname(dirname(__FILE__))),
+            array('react', 'react-dom', 'jquery'),
+            '2.0.0',
+            true
+        );
+        
+        // Localize script
+        wp_localize_script('fflbro-quote-generator', 'fflbroQuote', array(
+            'ajaxurl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('fflbro_working_nonce'),
+            'distributors' => $this->supported_distributors,
+            'settings' => array(
+                'lipseys_markup' => get_option('fflbro_lipseys_markup', 15),
+                'rsr_markup' => get_option('fflbro_rsr_markup', 15),
+                'davidsons_markup' => get_option('fflbro_davidsons_markup', 15),
+                'tax_rate' => get_option('fflbro_tax_rate', 0)
+            )
+        ));
+        
+        // Enqueue styles
+        wp_enqueue_style(
+            'fflbro-quote-generator',
+            plugins_url('includes/quote-generator/quote-generator.css', dirname(dirname(__FILE__))),
+            array(),
+            '2.0.0'
+        );
+    }
+    
+    /**
+     * Search products across all distributors
+     */
     public function search_products() {
         check_ajax_referer('fflbro_working_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => 'Insufficient permissions'));
+        }
         
         global $wpdb;
         $search_term = sanitize_text_field($_POST['search'] ?? '');
@@ -62,6 +143,9 @@ class FFLBRO_Enhanced_Quote_Generator {
         ));
     }
     
+    /**
+     * Group products by item
+     */
     private function group_products($products) {
         $grouped = array();
         
@@ -99,8 +183,15 @@ class FFLBRO_Enhanced_Quote_Generator {
         return $result;
     }
     
+    /**
+     * Save quote to database
+     */
     public function save_quote() {
         check_ajax_referer('fflbro_working_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => 'Insufficient permissions'));
+        }
         
         global $wpdb;
         $quote_data = json_decode(stripslashes($_POST['quote_data'] ?? '{}'), true);
@@ -148,8 +239,15 @@ class FFLBRO_Enhanced_Quote_Generator {
         }
     }
     
+    /**
+     * Load existing quote
+     */
     public function load_quote() {
         check_ajax_referer('fflbro_working_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => 'Insufficient permissions'));
+        }
         
         global $wpdb;
         $quote_number = sanitize_text_field($_POST['quote_number'] ?? '');
@@ -171,60 +269,7 @@ class FFLBRO_Enhanced_Quote_Generator {
         $quote['quote_data'] = json_decode($quote['quote_data'], true);
         wp_send_json_success(array('quote' => $quote));
     }
-    
-    public function render_quote_generator($atts) {
-        ob_start();
-        ?>
-        <div id="fflbro-quote-generator" class="fflbro-quote-generator-container">
-            <div class="quote-generator-header">
-                <h2>Smart Quote Generator</h2>
-                <p>Search across Lipseys, RSR, and Davidsons for the best prices</p>
-            </div>
-            <div id="quote-generator-app"></div>
-        </div>
-        <?php
-        return ob_get_clean();
-    }
-    
-    public function enqueue_assets() {
-        global $post;
-        if (!is_a($post, 'WP_Post') || !has_shortcode($post->post_content, 'fflbro_quote_generator')) {
-            return;
-        }
-        
-        wp_enqueue_script('react', 'https://unpkg.com/react@18/umd/react.production.min.js', array(), '18.0.0', true);
-        wp_enqueue_script('react-dom', 'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js', array('react'), '18.0.0', true);
-        
-        wp_enqueue_script(
-            'fflbro-quote-generator',
-            plugins_url('includes/quote-generator/quote-generator.js', dirname(dirname(__FILE__))),
-            array('react', 'react-dom', 'jquery'),
-            '2.0.0',
-            true
-        );
-        
-        wp_localize_script('fflbro-quote-generator', 'fflbroQuote', array(
-            'ajaxurl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('fflbro_working_nonce'),
-            'distributors' => $this->supported_distributors,
-            'settings' => array(
-                'lipseys_markup' => get_option('fflbro_lipseys_markup', 15),
-                'rsr_markup' => get_option('fflbro_rsr_markup', 15),
-                'davidsons_markup' => get_option('fflbro_davidsons_markup', 15),
-                'tax_rate' => get_option('fflbro_tax_rate', 0)
-            )
-        ));
-        
-        wp_enqueue_style(
-            'fflbro-quote-generator',
-            plugins_url('includes/quote-generator/quote-generator.css', dirname(dirname(__FILE__))),
-            array(),
-            '2.0.0'
-        );
-    }
 }
-
-new FFLBRO_Enhanced_Quote_Generator();
 
 // Auto-create quotes table on plugin load
 add_action('plugins_loaded', 'fflbro_create_quotes_table_on_load');
@@ -232,7 +277,6 @@ function fflbro_create_quotes_table_on_load() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'fflbro_quotes';
     
-    // Check if table exists
     if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
         $charset_collate = $wpdb->get_charset_collate();
         
@@ -258,3 +302,6 @@ function fflbro_create_quotes_table_on_load() {
         dbDelta($sql);
     }
 }
+
+// Initialize
+new FFLBRO_Enhanced_Quote_Generator();
