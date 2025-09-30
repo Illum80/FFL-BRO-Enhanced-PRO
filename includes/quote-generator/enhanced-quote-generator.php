@@ -225,3 +225,36 @@ class FFLBRO_Enhanced_Quote_Generator {
 }
 
 new FFLBRO_Enhanced_Quote_Generator();
+
+// Auto-create quotes table on plugin load
+add_action('plugins_loaded', 'fflbro_create_quotes_table_on_load');
+function fflbro_create_quotes_table_on_load() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'fflbro_quotes';
+    
+    // Check if table exists
+    if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+        $charset_collate = $wpdb->get_charset_collate();
+        
+        $sql = "CREATE TABLE $table_name (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            quote_number VARCHAR(50) NOT NULL UNIQUE,
+            customer_name VARCHAR(255),
+            customer_email VARCHAR(255),
+            customer_phone VARCHAR(50),
+            quote_data LONGTEXT,
+            subtotal DECIMAL(10,2),
+            tax DECIMAL(10,2),
+            total DECIMAL(10,2),
+            status VARCHAR(50) DEFAULT 'pending',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            expires_at DATETIME,
+            INDEX(quote_number),
+            INDEX(customer_email),
+            INDEX(status)
+        ) $charset_collate;";
+        
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
+    }
+}
