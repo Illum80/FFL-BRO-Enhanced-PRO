@@ -827,6 +827,7 @@ class FFLBroEnhancedPro {
             alert("RSR sync placeholder - working!");
         }
 
+        
         function uploadDavidsonsCSV() {
             const input = document.createElement("input");
             input.type = "file";
@@ -834,25 +835,47 @@ class FFLBroEnhancedPro {
             input.onchange = function(e) {
                 const file = e.target.files[0];
                 if (file && confirm("Upload " + file.name + " to Davidsons inventory?")) {
+                    const progressDiv = document.createElement("div");
+                    progressDiv.id = "davidsons-upload-progress";
+                    progressDiv.style.cssText = "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:30px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:9999;min-width:400px;";
+                    progressDiv.innerHTML = "<h3 style=\"margin:0 0 15px 0;\">Uploading Davidsons Catalog...</h3><div style=\"background:#f0f0f1;height:30px;border-radius:15px;overflow:hidden;margin-bottom:10px;\"><div id=\"davidsons-progress-bar\" style=\"background:#2271b1;height:100%;width:0%;transition:width 0.3s;\"></div></div><div id=\"davidsons-progress-text\" style=\"text-align:center;color:#666;\">Processing...</div>";
+                    document.body.appendChild(progressDiv);
+
                     const formData = new FormData();
                     formData.append("csv_file", file);
                     formData.append("action", "davidsons_upload_csv");
                     formData.append("nonce", fflbro_ajax.nonce);
-                    
-                    fetch(ajaxurl, {
-                        method: "POST",
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        alert(data.success ? "✅ " + (data.data.message || data.data) : "❌ Upload Error: " + (typeof data.data === "string" ? data.data : (data.data.message || "Unknown error")));
-                        if (data.success) location.reload();
+
+                    const xhr = new XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function(e) {
+                        if (e.lengthComputable) {
+                            const percent = Math.round((e.loaded / e.total) * 100);
+                            document.getElementById("davidsons-progress-bar").style.width = percent + "%";
+                            document.getElementById("davidsons-progress-text").textContent = "Uploading: " + percent + "%";
+                        }
                     });
+                    xhr.addEventListener("load", function() {
+                        if (xhr.status === 200) {
+                            try {
+                                const data = JSON.parse(xhr.responseText);
+                                document.getElementById("davidsons-progress-bar").style.width = "100%";
+                                document.getElementById("davidsons-progress-bar").style.background = data.success ? "#46b450" : "#dc3232";
+                                document.getElementById("davidsons-progress-text").textContent = data.success ? "Success: " + (data.data.message || data.data) : "Upload failed";
+                                setTimeout(function() {
+                                    document.body.removeChild(progressDiv);
+                                    if (data.success) location.reload();
+                                }, 2000);
+                            } catch(e) {
+                                document.getElementById("davidsons-progress-text").textContent = "Error parsing response";
+                            }
+                        }
+                    });
+                    xhr.open("POST", ajaxurl);
+                    xhr.send(formData);
                 }
             };
             input.click();
         }
-        
         function viewDavidsonsInventory() {
             fetch(ajaxurl, {
                 method: "POST",
