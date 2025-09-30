@@ -236,6 +236,27 @@ class FFLBroEnhancedPro {
         add_submenu_page('fflbro-enhanced-pro', 'Settings', '⚙️ Settings', 'manage_options', 'fflbro-settings', array($this, 'settings_page'));
     }
     
+    public function enqueue_admin_scripts($hook) {
+        if (strpos($hook, 'fflbro') === false) {
+            return;
+        }
+        
+        wp_enqueue_script('jquery');
+        
+        // Enqueue distributor integration script
+        wp_enqueue_script(
+            'fflbro-distributor-integration',
+            plugin_dir_url(__FILE__) . 'assets/js/distributor-integration.js',
+            array('jquery'),
+            '7.2.4',
+            true
+        );
+        
+        wp_localize_script('fflbro-distributor-integration', 'fflbro_ajax', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('fflbro_nonce')
+        ));
+    }
     
     /**
      * RESTORED: Enhanced dashboard showing all modules
