@@ -707,19 +707,23 @@ class FFLBroEnhancedPro {
         }
     }
     
+    // Helper functions
     public function search_products() {
         check_ajax_referer('fflbro_nonce', 'nonce');
         
         global $wpdb;
-        
         $search_term = sanitize_text_field($_POST['search_term']);
         
-        // Search your Lipseys products
         $products = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM {$wpdb->prefix}fflbro_products 
-             WHERE distributor = 'lipseys' 
-             AND (description LIKE %s OR manufacturer LIKE %s OR model LIKE %s) 
-             LIMIT 10",
+            "SELECT distributor, distributor_sku, manufacturer, model, description, 
+                    cost_price, quantity_available, category, caliber
+             FROM {$wpdb->prefix}fflbro_products
+             WHERE description LIKE %s 
+                OR manufacturer LIKE %s 
+                OR model LIKE %s 
+                OR distributor_sku LIKE %s
+             ORDER BY distributor, manufacturer, model
+             LIMIT 50",
             '%' . $search_term . '%',
             '%' . $search_term . '%',
             '%' . $search_term . '%',
@@ -728,8 +732,6 @@ class FFLBroEnhancedPro {
         
         wp_send_json_success(array('products' => $products));
     }
-    
-    // Helper functions
     
     private function get_distributor_display_name($distributor) {
         $names = array(
