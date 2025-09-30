@@ -47,8 +47,6 @@ class FFLBroEnhancedPro {
         add_action('wp_ajax_fflbro_test_rsr_api', array($this, 'test_rsr_connection'));
         add_action("wp_ajax_test_rsr_connection", array($this, "test_rsr_connection"));
         add_action("wp_ajax_sync_rsr_catalog", array($this, "sync_rsr_catalog"));
-        add_action('wp_ajax_upload_davidsons_csv', array($this, 'upload_davidsons_csv'));
-        add_action('wp_ajax_get_davidsons_inventory', array($this, 'get_davidsons_inventory'));
         add_action('wp_ajax_fflbro_sync_orion', array($this, 'sync_orion'));
         
         // RESTORED: Module handlers
@@ -838,7 +836,7 @@ class FFLBroEnhancedPro {
                 if (file && confirm("Upload " + file.name + " to Davidsons inventory?")) {
                     const formData = new FormData();
                     formData.append("csv_file", file);
-                    formData.append("action", "upload_davidsons_csv");
+                    formData.append("action", "davidsons_upload_csv");
                     formData.append("nonce", fflbro_ajax.nonce);
                     
                     fetch(ajaxurl, {

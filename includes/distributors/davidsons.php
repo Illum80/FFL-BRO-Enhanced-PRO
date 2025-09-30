@@ -7,7 +7,7 @@ class FFLBRO_Davidsons_Integration {
     }
     
     public function upload_csv() {
-        check_ajax_referer('fflbro_working_nonce', 'nonce');
+        check_ajax_referer('fflbro_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Insufficient permissions');
@@ -114,7 +114,7 @@ class FFLBRO_Davidsons_Integration {
     }
     
     public function get_inventory() {
-        check_ajax_referer('fflbro_working_nonce', 'nonce');
+        check_ajax_referer('fflbro_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Insufficient permissions');
