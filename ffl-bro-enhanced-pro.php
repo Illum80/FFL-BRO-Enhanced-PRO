@@ -47,6 +47,8 @@ class FFLBroEnhancedPro {
         add_action('wp_ajax_fflbro_test_rsr_api', array($this, 'test_rsr_connection'));
         add_action("wp_ajax_test_rsr_connection", array($this, "test_rsr_connection"));
         add_action("wp_ajax_sync_rsr_catalog", array($this, "sync_rsr_catalog"));
+        add_action('wp_ajax_upload_davidsons_csv', array($this, 'upload_davidsons_csv'));
+        add_action('wp_ajax_get_davidsons_inventory', array($this, 'get_davidsons_inventory'));
         add_action('wp_ajax_fflbro_sync_orion', array($this, 'sync_orion'));
         
         // RESTORED: Module handlers
@@ -531,6 +533,9 @@ class FFLBroEnhancedPro {
         register_setting('fflbro_settings', 'fflbro_rsr_user');
         register_setting('fflbro_settings', 'fflbro_rsr_pass');
         register_setting('fflbro_settings', 'fflbro_rsr_markup');
+        register_setting('fflbro_settings', 'fflbro_lipseys_markup');
+        register_setting('fflbro_settings', 'fflbro_davidsons_markup');
+        register_setting('fflbro_settings', 'fflbro_davidsons_auto_import');
         register_setting('fflbro_settings', 'fflbro_rsr_auto_sync');
         
         // Register existing business settings too
