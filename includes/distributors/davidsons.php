@@ -65,12 +65,14 @@ class FFLBRO_Davidsons_Integration {
             
             $product_data = array(
                 'distributor' => 'davidsons',
+                'distributor_sku' => $data[0] ?? '',
                 'item_number' => $data[0] ?? '',
                 'upc' => $data[1] ?? '',
                 'description' => $data[2] ?? '',
+                'cost_price' => floatval($data[3] ?? 0),
                 'price' => floatval($data[3] ?? 0),
-                'quantity' => intval($data[4] ?? 0),
-                'updated_at' => current_time('mysql')
+                'quantity_available' => intval($data[4] ?? 0),
+                'last_updated' => current_time('mysql')
             );
             
             $exists = $wpdb->get_var($wpdb->prepare(
@@ -104,7 +106,7 @@ class FFLBRO_Davidsons_Integration {
             
             $updated = $wpdb->update(
                 $table,
-                array('quantity' => intval($data[1] ?? 0), 'updated_at' => current_time('mysql')),
+                array('quantity' => intval($data[1] ?? 0), 'last_updated' => current_time('mysql')),
                 array('distributor' => 'davidsons', 'item_number' => $data[0] ?? '')
             );
             if ($updated) $count++;
