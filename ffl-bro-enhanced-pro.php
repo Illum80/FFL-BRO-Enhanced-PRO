@@ -395,7 +395,11 @@ class FFLBroEnhancedPro {
         // Pass nonce to JavaScript
         wp_localize_script('fflbro-quote-generator', 'fflbroQuote', array(
             'ajaxurl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('fflbro_nonce')
+            'nonce' => wp_create_nonce('fflbro_nonce'),
+            'settings' => array(
+                'tax_rate' => 0.07,
+                'default_margin' => 25
+            )
         ));
         
         echo '<div class="wrap fflbro-quotes">';
