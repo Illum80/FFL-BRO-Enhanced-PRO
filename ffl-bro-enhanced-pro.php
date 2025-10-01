@@ -251,6 +251,29 @@ class FFLBroEnhancedPro {
         );
         
         wp_localize_script('fflbro-distributor-integration', 'fflbro_ajax', array(
+
+        // Quote generator scripts
+        if ($hook == 'ffl-bro-enhanced-pro_page_fflbro-quotes') {
+            wp_enqueue_style(
+                'fflbro-quote-generator-css',
+                plugin_dir_url(__FILE__) . 'includes/quote-generator/quote-generator.css',
+                array(),
+                '2.0.0'
+            );
+            
+            wp_enqueue_script(
+                'fflbro-quote-generator',
+                plugin_dir_url(__FILE__) . 'includes/quote-generator/quote-generator.js',
+                array('jquery'),
+                '2.0.0',
+                true
+            );
+            
+            wp_localize_script('fflbro-quote-generator', 'fflbroQuote', array(
+                'ajaxurl' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('fflbro_nonce')
+            ));
+        }
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('fflbro_nonce')
         ));
