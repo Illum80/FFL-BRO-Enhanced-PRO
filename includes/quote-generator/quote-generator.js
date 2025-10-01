@@ -34,7 +34,7 @@ const QuoteGenerator = () => {
             const formData = new FormData();
             formData.append('action', 'fflbro_search_products');
             formData.append('nonce', fflbroQuote.nonce);
-            formData.append('search', searchTerm);
+            formData.append('search_term', searchTerm);
 
             const response = await fetch(fflbroQuote.ajaxurl, {
                 method: 'POST',
