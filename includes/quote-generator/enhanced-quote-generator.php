@@ -16,7 +16,7 @@ class FFLBRO_Enhanced_Quote_Generator {
         add_action('admin_menu', array($this, 'add_admin_menu'));
         
         // Register AJAX handlers (admin only)
-        add_action('wp_ajax_fflbro_search_products', array($this, 'search_products'));
+        // add_action('wp_ajax_fflbro_search_products', array($this, 'search_products'));
         add_action('wp_ajax_fflbro_save_quote', array($this, 'save_quote'));
         add_action('wp_ajax_fflbro_load_quote', array($this, 'load_quote'));
         
