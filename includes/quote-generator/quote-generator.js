@@ -168,7 +168,7 @@ const QuoteGenerator = () => {
                                 )
                             ),
                             React.createElement('div', { className: 'distributor-options' },
-                                Object.entries(product.distributors).map(([key, dist]) =>
+                                Object.entries(product.distributors || {}).map(([key, dist]) =>
                                     React.createElement('div', { key, className: 'distributor-option' },
                                         React.createElement('div', { className: 'dist-info' },
                                             React.createElement('strong', null, dist.distributor.toUpperCase()),
