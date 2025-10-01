@@ -88,7 +88,7 @@ class FFLBroEnhancedPro {
         ) $charset_collate;";
         
         // PRESERVED: Your working products table
-        $sql_products = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}fflbro_products (
+        $sql_products = "CREATE TABLE IF NOT EXISTS main_fflbro_products (
             id int(11) NOT NULL AUTO_INCREMENT,
             distributor varchar(50) NOT NULL,
             upc varchar(50),
@@ -606,7 +606,7 @@ class FFLBroEnhancedPro {
             
             set_transient('fflbro_lipseys_catalog', $catalog_data['data'], 3600);
             $total = count($catalog_data['data']);
-            $wpdb->query("DELETE FROM {$wpdb->prefix}fflbro_products WHERE distributor = 'lipseys'");
+            $wpdb->query("DELETE FROM main_fflbro_products WHERE distributor = 'lipseys'");
             
             wp_send_json_success(array('message' => 'Starting sync...', 'total' => $total, 'processed' => 0, 'next_batch' => 1, 'continue' => true));
         }
@@ -716,8 +716,8 @@ class FFLBroEnhancedPro {
         
         $products = $wpdb->get_results($wpdb->prepare(
             "SELECT distributor, distributor_sku, manufacturer, model, description, 
-                    cost_price, quantity_available, category, caliber
-             FROM {$wpdb->prefix}fflbro_products
+                    cost_price as dealer_price, cost_price, quantity_available, category, caliber
+             FROM main_fflbro_products
              WHERE description LIKE %s 
                 OR manufacturer LIKE %s 
                 OR model LIKE %s 
