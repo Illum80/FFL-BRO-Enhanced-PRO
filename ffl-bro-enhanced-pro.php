@@ -390,7 +390,7 @@ class FFLBroEnhancedPro {
         wp_enqueue_style('fflbro-quote-generator-css', plugin_dir_url(__FILE__) . 'includes/quote-generator/quote-generator.css', array(), '2.0.0');
         wp_enqueue_script('react', 'https://unpkg.com/react@18/umd/react.production.min.js', array(), '18', true);
         wp_enqueue_script('react-dom', 'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js', array('react'), '18', true);
-        wp_enqueue_script('fflbro-quote-generator', plugin_dir_url(__FILE__) . 'includes/quote-generator/quote-generator.js', array('jquery', 'react', 'react-dom'), '2.0.0', true);
+        wp_enqueue_script('fflbro-quote-generator', plugin_dir_url(__FILE__) . 'includes/quote-generator/quote-generator.js', array('jquery', 'react', 'react-dom'), '2.0.0', false);
         
         // Pass nonce to JavaScript
         wp_localize_script('fflbro-quote-generator', 'fflbroQuote', array(
