@@ -286,7 +286,7 @@ class FFLBroEnhancedPro {
         global $wpdb;
         
         // Get statistics
-        $total_products = $wpdb->get_var("SELECT COUNT(*) FROM wp_fflbro_inventory");
+        $total_products = $wpdb->get_var("SELECT COUNT(*) FROM main_fflbro_products");
         $total_customers = $wpdb->get_var("SELECT COUNT(*) FROM main_fflbro_customers_enhanced");
         $total_quotes = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_quotes");
         $pending_forms = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_form4473 WHERE status = 'in_progress'");
@@ -638,12 +638,13 @@ class FFLBroEnhancedPro {
         
         $processed = 0;
         foreach ($batch_products as $product) {
-            $wpdb->insert($wpdb->prefix . 'fflbro_products', array(
+            $wpdb->insert($wpdb->prefix . 'main_fflbro_products', array(
                 'distributor' => 'lipseys',
                 'item_number' => $product['itemNo'] ?? '',
                 'description' => trim(($product['description1'] ?? '') . ' ' . ($product['description2'] ?? '')),
                 'manufacturer' => $product['manufacturer'] ?? '',
                 'price' => floatval($product['currentPrice'] ?? 0),
+                'cost_price' => floatval($product['price'] ?? $product['currentPrice'] ?? 0),
                 'quantity' => intval($product['quantity'] ?? 0)
             ));
             $processed++;
