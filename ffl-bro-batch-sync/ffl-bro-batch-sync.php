@@ -48,7 +48,7 @@ class FFLBro_Batch_Sync {
         
         // Clear old products
         global $wpdb;
-        $wpdb->query("DELETE FROM {$wpdb->prefix}fflbro_products WHERE distributor = 'lipseys'");
+        $wpdb->query("DELETE FROM {$wpdb->prefix}main_fflbro_products WHERE distributor = 'lipseys'");
         
         // Process in chunks of 100 and send progress updates
         $chunk_size = 100;
@@ -58,12 +58,14 @@ class FFLBro_Batch_Sync {
             $chunk = array_slice($products, $i, $chunk_size);
             
             foreach ($chunk as $p) {
-                $wpdb->insert($wpdb->prefix . 'fflbro_products', array(
+                $wpdb->insert($wpdb->prefix . 'main_fflbro_products', array(
                     'distributor' => 'lipseys',
                     'item_number' => $p['itemNo'] ?? '',
+                    'distributor_sku' => 'lipseys-' . ($p['itemNo'] ?? ''),
                     'description' => trim(($p['description1'] ?? '') . ' ' . ($p['description2'] ?? '')),
                     'manufacturer' => $p['manufacturer'] ?? '',
                     'price' => floatval($p['currentPrice'] ?? 0),
+                    'cost_price' => floatval($p['price'] ?? $p['currentPrice'] ?? 0),
                     'quantity' => intval($p['quantity'] ?? 0)
                 ));
             }
