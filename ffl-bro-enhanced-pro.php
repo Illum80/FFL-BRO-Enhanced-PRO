@@ -245,7 +245,7 @@ class FFLBroEnhancedPro {
         wp_enqueue_script(
             'fflbro-distributor-integration',
             plugin_dir_url(__FILE__) . 'assets/js/distributor-integration.js',
-            array('jquery'),
+            array('jquery', 'react', 'react-dom'),
             '7.2.4',
             true
         );
@@ -267,7 +267,7 @@ class FFLBroEnhancedPro {
             wp_enqueue_script(
                 'fflbro-quote-generator',
                 plugin_dir_url(__FILE__) . 'includes/quote-generator/quote-generator.js',
-                array('jquery'),
+                array('jquery', 'react', 'react-dom'),
                 '2.0.0',
                 true
             );
@@ -388,7 +388,9 @@ class FFLBroEnhancedPro {
     public function quotes_page() {
         // Enqueue scripts and styles for this page
         wp_enqueue_style('fflbro-quote-generator-css', plugin_dir_url(__FILE__) . 'includes/quote-generator/quote-generator.css', array(), '2.0.0');
-        wp_enqueue_script('fflbro-quote-generator', plugin_dir_url(__FILE__) . 'includes/quote-generator/quote-generator.js', array('jquery'), '2.0.0', true);
+        wp_enqueue_script('react', 'https://unpkg.com/react@18/umd/react.production.min.js', array(), '18', true);
+        wp_enqueue_script('react-dom', 'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js', array('react'), '18', true);
+        wp_enqueue_script('fflbro-quote-generator', plugin_dir_url(__FILE__) . 'includes/quote-generator/quote-generator.js', array('jquery', 'react', 'react-dom'), '2.0.0', true);
         
         // Pass nonce to JavaScript
         wp_localize_script('fflbro-quote-generator', 'fflbroQuote', array(
@@ -401,7 +403,7 @@ class FFLBroEnhancedPro {
         echo '<p class="description">Search across Lipseys, RSR, and Davidsons to create professional quotes for customers</p>';
         
         // The quote-generator.js will handle rendering the interface
-        echo '<div id="fflbro-quote-app"></div>';
+        echo '<div id="quote-generator-app"></div>';
         
         echo '</div>';
     }
