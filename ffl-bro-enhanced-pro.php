@@ -716,7 +716,7 @@ class FFLBroEnhancedPro {
         
         $products = $wpdb->get_results($wpdb->prepare(
             "SELECT distributor, distributor_sku, manufacturer, model, description, 
-                    cost_price as dealer_price, cost_price as dealer_price, cost_price, quantity_available, category, caliber
+                    cost_price as dealer_price, quantity_available, category, caliber
              FROM main_fflbro_products
              WHERE description LIKE %s 
                 OR manufacturer LIKE %s 
