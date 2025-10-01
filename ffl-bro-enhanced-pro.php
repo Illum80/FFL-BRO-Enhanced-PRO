@@ -386,35 +386,22 @@ class FFLBroEnhancedPro {
      * RESTORED: Quote Generator
      */
     public function quotes_page() {
+        // Enqueue scripts and styles for this page
+        wp_enqueue_style('fflbro-quote-generator-css', plugin_dir_url(__FILE__) . 'includes/quote-generator/quote-generator.css', array(), '2.0.0');
+        wp_enqueue_script('fflbro-quote-generator', plugin_dir_url(__FILE__) . 'includes/quote-generator/quote-generator.js', array('jquery'), '2.0.0', true);
+        
+        // Pass nonce to JavaScript
+        wp_localize_script('fflbro-quote-generator', 'fflbroQuote', array(
+            'ajaxurl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('fflbro_nonce')
+        ));
+        
         echo '<div class="wrap fflbro-quotes">';
-        echo '<h1>💰 Advanced Quote Generator</h1>';
-        echo '<p>Multi-distributor pricing system with your Lipseys inventory.</p>';
+        echo '<h1>📝 Smart Quote Generator</h1>';
+        echo '<p class="description">Search across Lipseys, RSR, and Davidsons to create professional quotes for customers</p>';
         
-        echo '<div class="quote-search-section">';
-        echo '<h3>Product Search</h3>';
-        echo '<form class="product-search">';
-        echo '<input type="text" id="search-term" placeholder="Search 16,887 Lipseys products..." class="large-text">';
-        echo '<select id="search-category">';
-        echo '<option value="">All Categories</option>';
-        echo '<option value="handguns">Handguns</option>';
-        echo '<option value="rifles">Rifles</option>';
-        echo '<option value="shotguns">Shotguns</option>';
-        echo '</select>';
-        echo '<button type="button" onclick="searchProducts()" class="button button-primary">Search Products</button>';
-        echo '</form>';
-        echo '<div id="search-results" class="search-results"></div>';
-        echo '</div>';
-        
-        echo '<div class="quote-builder-section">';
-        echo '<h3>Quote Builder</h3>';
-        echo '<div id="quote-items" class="quote-items"></div>';
-        echo '<div class="quote-totals">';
-        echo '<div class="total-line">Subtotal: $<span id="quote-subtotal">0.00</span></div>';
-        echo '<div class="total-line">Margin: <span id="quote-margin">25</span>%</div>';
-        echo '<div class="total-line total-final">Total: $<span id="quote-total">0.00</span></div>';
-        echo '</div>';
-        echo '<button class="button button-primary">Generate PDF Quote</button>';
-        echo '</div>';
+        // The quote-generator.js will handle rendering the interface
+        echo '<div id="fflbro-quote-app"></div>';
         
         echo '</div>';
     }
