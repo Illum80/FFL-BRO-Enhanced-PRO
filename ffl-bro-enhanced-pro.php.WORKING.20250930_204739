@@ -88,7 +88,7 @@ class FFLBroEnhancedPro {
         ) $charset_collate;";
         
         // PRESERVED: Your working products table
-        $sql_products = "CREATE TABLE IF NOT EXISTS main_fflbro_products (
+        $sql_products = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}fflbro_products (
             id int(11) NOT NULL AUTO_INCREMENT,
             distributor varchar(50) NOT NULL,
             upc varchar(50),
@@ -606,7 +606,7 @@ class FFLBroEnhancedPro {
             
             set_transient('fflbro_lipseys_catalog', $catalog_data['data'], 3600);
             $total = count($catalog_data['data']);
-            $wpdb->query("DELETE FROM main_fflbro_products WHERE distributor = 'lipseys'");
+            $wpdb->query("DELETE FROM {$wpdb->prefix}fflbro_products WHERE distributor = 'lipseys'");
             
             wp_send_json_success(array('message' => 'Starting sync...', 'total' => $total, 'processed' => 0, 'next_batch' => 1, 'continue' => true));
         }
@@ -716,8 +716,8 @@ class FFLBroEnhancedPro {
         
         $products = $wpdb->get_results($wpdb->prepare(
             "SELECT distributor, distributor_sku, manufacturer, model, description, 
-                    cost_price as dealer_price, quantity_available, category, caliber
-             FROM main_fflbro_products
+                    cost_price, quantity_available, category, caliber
+             FROM {$wpdb->prefix}fflbro_products
              WHERE description LIKE %s 
                 OR manufacturer LIKE %s 
                 OR model LIKE %s 
@@ -1016,3 +1016,80 @@ require_once(__DIR__ . '/searchProducts-addon.php');
 require_once plugin_dir_path(__FILE__) . 'includes/distributors/davidsons.php';
 
 // Enhanced Quote Generator Module v7.2.0
+
+// Visual Quote Generator
+if (file_exists(__DIR__ . '/includes/visual-quote-backend.php')) {
+    require_once __DIR__ . '/includes/visual-quote-backend.php';
+}
+
+add_shortcode('fflbro_visual_quote', 'fflbro_visual_quote_shortcode');
+
+function fflbro_visual_quote_shortcode() {
+    wp_enqueue_script('react', 'https://unpkg.com/react@18/umd/react.production.min.js', [], '18', true);
+    wp_enqueue_script('react-dom', 'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js', ['react'], '18', true);
+    wp_enqueue_script('babel', 'https://unpkg.com/@babel/standalone/babel.min.js', [], '7', true);
+    
+    
+    wp_localize_script('fflbro-visual-quote', 'fflbroQuote', [
+        'nonce' => wp_create_nonce('fflbro_quote_nonce'),
+        'ajaxurl' => admin_url('admin-ajax.php')
+    ]);
+    
+    return '<div id="fflbro-visual-quote-root"></div>
+    <script type="text/babel">
+        const root = ReactDOM.createRoot(document.getElementById("fflbro-visual-quote-root"));
+        root.render(<VisualQuoteGenerator />);
+    </script>';
+}
+
+// AJAX handlers for quote generator
+add_action("wp_ajax_fflbro_search_products", "fflbro_search_products_handler_main");
+
+
+// AJAX handlers for quote generator  
+add_action('wp_ajax_fflbro_search_products', 'fflbro_search_products_handler');
+
+function fflbro_search_products_handler() {
+    global $wpdb;
+    $search = sanitize_text_field($_POST['search']);
+    
+    if (strlen($search) < 2) {
+        wp_send_json_error(['message' => 'Search too short']);
+    }
+    
+    $sql = $wpdb->prepare("
+        SELECT 
+            id,
+            COALESCE(model, description) as name,
+            manufacturer,
+            distributor_sku as sku,
+            distributor,
+            COALESCE(map_price, msrp, cost_price, 0) as price,
+            quantity_available as quantity
+        FROM main_fflbro_products
+        WHERE status = 'active'
+        AND (
+            COALESCE(model, description) LIKE %s
+            OR manufacturer LIKE %s
+            OR distributor_sku LIKE %s
+        )
+        LIMIT 50
+    ", "%{$search}%", "%{$search}%", "%{$search}%");
+    
+    $products = $wpdb->get_results($sql);
+    
+    $formatted = array_map(function($p) {
+        return [
+            'id' => (int)$p->id,
+            'name' => $p->name ?: 'Unknown Product',
+            'manufacturer' => $p->manufacturer ?: 'Unknown',
+            'sku' => $p->sku ?: 'No SKU',
+            'distributor' => $p->distributor,
+            'price' => round(floatval($p->price), 2),
+            'quantity' => (int)($p->quantity ?: 0)
+        ];
+    }, $products);
+    
+    wp_send_json_success(['products' => $formatted]);
+}
+require_once plugin_dir_path(__FILE__) . 'includes/admin-visual-quote.php';
