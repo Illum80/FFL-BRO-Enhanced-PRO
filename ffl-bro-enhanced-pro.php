@@ -251,6 +251,9 @@ class FFLBroEnhancedPro {
         );
         
         wp_localize_script('fflbro-distributor-integration', 'fflbro_ajax', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('fflbro_nonce')
+        ));
 
         // Quote generator scripts
         if ($hook == 'ffl-bro-enhanced-pro_page_fflbro-quotes') {
@@ -274,9 +277,6 @@ class FFLBroEnhancedPro {
                 'nonce' => wp_create_nonce('fflbro_nonce')
             ));
         }
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('fflbro_nonce')
-        ));
     }
     
     /**
