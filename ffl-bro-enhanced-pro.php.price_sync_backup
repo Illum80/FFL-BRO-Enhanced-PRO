@@ -2,7 +2,7 @@
 /**
  * Plugin Name: FFL-BRO Enhanced PRO
  * Description: Complete FFL business management system with working Lipseys sync PRESERVED
- * Version: 7.2.9
+ * Version: 6.4.2-RESTORED-SAFE
  * Author: NEEFECO ARMS
  * Text Domain: ffl-bro-enhanced-pro
  */
@@ -261,14 +261,14 @@ class FFLBroEnhancedPro {
                 'fflbro-quote-generator-css',
                 plugin_dir_url(__FILE__) . 'includes/quote-generator/quote-generator.css',
                 array(),
-                '2.0.3'
+                '2.0.1'
             );
             
             wp_enqueue_script(
                 'fflbro-quote-generator',
                 plugin_dir_url(__FILE__) . 'includes/quote-generator/quote-generator.js',
                 array('jquery', 'react', 'react-dom'),
-                '2.0.3',
+                '2.0.1',
                 true
             );
             
@@ -286,7 +286,7 @@ class FFLBroEnhancedPro {
         global $wpdb;
         
         // Get statistics
-        $total_products = $wpdb->get_var("SELECT COUNT(*) FROM main_fflbro_products");
+        $total_products = $wpdb->get_var("SELECT COUNT(*) FROM wp_fflbro_inventory");
         $total_customers = $wpdb->get_var("SELECT COUNT(*) FROM main_fflbro_customers_enhanced");
         $total_quotes = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_quotes");
         $pending_forms = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_form4473 WHERE status = 'in_progress'");
@@ -387,10 +387,10 @@ class FFLBroEnhancedPro {
      */
     public function quotes_page() {
         // Enqueue scripts and styles for this page
-        wp_enqueue_style('fflbro-quote-generator-css', plugin_dir_url(__FILE__) . 'includes/quote-generator/quote-generator.css', array(), '2.0.3');
+        wp_enqueue_style('fflbro-quote-generator-css', plugin_dir_url(__FILE__) . 'includes/quote-generator/quote-generator.css', array(), '2.0.1');
         wp_enqueue_script('react', 'https://unpkg.com/react@18/umd/react.production.min.js', array(), '18', true);
         wp_enqueue_script('react-dom', 'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js', array('react'), '18', true);
-        wp_enqueue_script('fflbro-quote-generator', plugin_dir_url(__FILE__) . 'includes/quote-generator/quote-generator.js', array('jquery', 'react', 'react-dom'), '2.0.3', false);
+        wp_enqueue_script('fflbro-quote-generator', plugin_dir_url(__FILE__) . 'includes/quote-generator/quote-generator.js', array('jquery', 'react', 'react-dom'), '2.0.1', false);
         
         // Pass nonce to JavaScript
         wp_localize_script('fflbro-quote-generator', 'fflbroQuote', array(
@@ -638,13 +638,12 @@ class FFLBroEnhancedPro {
         
         $processed = 0;
         foreach ($batch_products as $product) {
-            $wpdb->insert($wpdb->prefix . 'main_fflbro_products', array(
+            $wpdb->insert($wpdb->prefix . 'fflbro_products', array(
                 'distributor' => 'lipseys',
                 'item_number' => $product['itemNo'] ?? '',
                 'description' => trim(($product['description1'] ?? '') . ' ' . ($product['description2'] ?? '')),
                 'manufacturer' => $product['manufacturer'] ?? '',
                 'price' => floatval($product['currentPrice'] ?? 0),
-                'cost_price' => floatval($product['price'] ?? $product['currentPrice'] ?? 0),
                 'quantity' => intval($product['quantity'] ?? 0)
             ));
             $processed++;
@@ -1033,24 +1032,3 @@ require_once(__DIR__ . '/searchProducts-addon.php');
 require_once plugin_dir_path(__FILE__) . 'includes/distributors/davidsons.php';
 
 // Enhanced Quote Generator Module v7.2.0
-
-// ============================================================================
-// DIGITAL ATF FORM 4473 MODULE
-// ============================================================================
-
-// Include the handler
-require_once plugin_dir_path(__FILE__) . 'modules/form-4473/form-4473-handler.php';
-require_once plugin_dir_path(__FILE__) . 'includes/form-4473/form-4473-app.php';
-
-// Add Form 4473 menu item
-add_action('admin_menu', function() {
-    add_submenu_page(
-        'fflbro-enhanced-pro',
-        'Digital Form 4473',
-        '📋 Form 4473',
-        'manage_options',
-        'fflbro-form-4473',
-        'fflbro_form_4473_page'
-    );
-}, 15);
-
