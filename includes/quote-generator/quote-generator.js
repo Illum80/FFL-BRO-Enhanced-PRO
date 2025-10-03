@@ -164,7 +164,7 @@ const QuoteGenerator = () => {
                                 React.createElement('h3', null, product.manufacturer),
                                 React.createElement('p', null, product.description),
                                 React.createElement('div', { className: 'best-price' },
-                                    `Best Price: $${product.best_price?.toFixed(2) || 'N/A'}`
+                                    `Best Price: $${parseFloat(product.dealer_price || 0).toFixed(2) || 'N/A'}`
                                 )
                             ),
                             React.createElement('div', { className: 'distributor-options' },
