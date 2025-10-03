@@ -1033,3 +1033,24 @@ require_once(__DIR__ . '/searchProducts-addon.php');
 require_once plugin_dir_path(__FILE__) . 'includes/distributors/davidsons.php';
 
 // Enhanced Quote Generator Module v7.2.0
+
+// ============================================================================
+// DIGITAL ATF FORM 4473 MODULE
+// ============================================================================
+
+// Include the handler
+require_once plugin_dir_path(__FILE__) . 'modules/form-4473/form-4473-handler.php';
+require_once plugin_dir_path(__FILE__) . 'includes/form-4473/form-4473-app.php';
+
+// Add Form 4473 menu item
+add_action('admin_menu', function() {
+    add_submenu_page(
+        'fflbro-enhanced-pro',
+        'Digital Form 4473',
+        '📋 Form 4473',
+        'manage_options',
+        'fflbro-form-4473',
+        'fflbro_form_4473_page'
+    );
+}, 15);
+
