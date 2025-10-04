@@ -467,19 +467,13 @@ class FFLBroEnhancedPro {
      * RESTORED: Form 4473
      */
     public function form4473_page() {
-        echo '<div class="wrap fflbro-form4473">';
-        echo '<h1>📋 Form 4473 - Digital ATF Compliance</h1>';
-        echo '<p>Streamlined digital processing for ATF compliance.</p>';
-        
-        echo '<div class="form4473-sections">';
-        echo '<div class="form-section">Section I: Customer Information</div>';
-        echo '<div class="form-section">Section II: Firearm Details</div>';
-        echo '<div class="form-section">Section III: Background Check</div>';
-        echo '<div class="form-section">Section IV: Verification & Completion</div>';
-        echo '</div>';
-        
-        echo '<p><strong>Status:</strong> Ready for configuration. Connect with your FFL compliance system.</p>';
-        echo '</div>';
+        require_once plugin_dir_path(__FILE__) . 'modules/form-4473-processing.php';
+        if (class_exists('FFL_BRO_Form_4473_Processing')) {
+            $form_processor = new FFL_BRO_Form_4473_Processing();
+            $form_processor->render_4473_page();
+        } else {
+            echo '<div class="wrap"><h1>Form 4473</h1><p>Module not loaded.</p></div>';
+        }
     }
     
     /**
@@ -1033,3 +1027,24 @@ require_once(__DIR__ . '/searchProducts-addon.php');
 require_once plugin_dir_path(__FILE__) . 'includes/distributors/davidsons.php';
 
 // Enhanced Quote Generator Module v7.2.0
+
+// Load Form 4473 v7.3.1 Enhanced Features
+$form_4473_modules = array(
+    'modules/form-4473/signatures/signature-handler.php',
+    'modules/form-4473/pdf/pdf-generator.php',
+    'modules/form-4473/uploads/photo-handler.php',
+    'modules/form-4473/email/email-handler.php',
+    'modules/form-4473/nics/nics-handler.php'
+);
+
+foreach ($form_4473_modules as $module) {
+    $module_path = plugin_dir_path(__FILE__) . $module;
+    if (file_exists($module_path)) {
+        require_once $module_path;
+    }
+}
+
+// Load Form 4473 Processing Module v7.3.1
+if (file_exists(__DIR__ . '/modules/form-4473-processing.php')) {
+    require_once __DIR__ . '/modules/form-4473-processing.php';
+}

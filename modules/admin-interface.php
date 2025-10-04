@@ -39,6 +39,7 @@ class FFL_BRO_Admin_Interface {
     }
     
     public function render_form_4473_page() {
+        require_once plugin_dir_path(__FILE__) . 'form-4473-processing.php';
         if (class_exists("FFL_BRO_Form_4473_Processing")) {
             $form_processor = new FFL_BRO_Form_4473_Processing();
             $form_processor->render_4473_page();
