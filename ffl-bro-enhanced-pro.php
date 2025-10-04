@@ -2,7 +2,7 @@
 /**
  * Plugin Name: FFL-BRO Enhanced PRO
  * Description: Complete FFL business management system with working Lipseys sync PRESERVED
- * Version: 6.4.2-RESTORED-SAFE
+ * Version: 7.3.1
  * Author: NEEFECO ARMS
  * Text Domain: ffl-bro-enhanced-pro
  */
@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants
-define('FFLBRO_ENHANCED_VERSION', '6.4.2-RESTORED-SAFE');
+define('FFLBRO_ENHANCED_VERSION', '7.3.1');
 define('FFLBRO_ENHANCED_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('FFLBRO_ENHANCED_PLUGIN_PATH', plugin_dir_path(__FILE__));
 
