@@ -1,0 +1,147 @@
+/* Form 4473 v7.3.1 Styles */
+
+.form-4473-manager {
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.form-4473-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.form-4473-header h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #1f2937;
+}
+
+.btn-create-form {
+    background: #f97316;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-create-form:hover {
+    background: #ea580c;
+}
+
+.form-4473-list {
+    display: grid;
+    gap: 20px;
+}
+
+.form-4473-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 20px;
+    align-items: center;
+    transition: box-shadow 0.2s;
+}
+
+.form-4473-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.form-info h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    color: #1f2937;
+}
+
+.form-info p {
+    margin: 4px 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.form-status {
+    display: flex;
+    align-items: center;
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-draft {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-pending {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.status-completed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.form-actions button {
+    padding: 8px 16px;
+    border: 1px solid #d1d5db;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.form-actions button:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.btn-edit {
+    color: #2563eb;
+}
+
+.btn-view {
+    color: #059669;
+}
+
+.no-forms {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6b7280;
+    font-size: 16px;
+}
+
+.form-4473-loading,
+.form-4473-error {
+    text-align: center;
+    padding: 40px;
+    font-size: 16px;
+}
+
+.form-4473-error {
+    color: #dc2626;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+}
