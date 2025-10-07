@@ -122,3 +122,35 @@
 .fflbro-fin-form .form-table td {
     padding: 15px 10px;
 }
+
+/* Bills specific styles */
+.overdue-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #d63638;
+    color: white;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.status-badge.status-draft {
+    background: #f0f0f1;
+    color: #646970;
+}
+
+.status-badge.status-unpaid {
+    background: #fcf3cf;
+    color: #7e6f00;
+}
+
+.status-badge.status-approved {
+    background: #d1e7ff;
+    color: #004085;
+}
+
+.status-badge.status-paid {
+    background: #d1f5d3;
+    color: #007017;
+}
