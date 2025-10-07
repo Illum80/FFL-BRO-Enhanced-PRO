@@ -85,6 +85,11 @@ class Vendors {
             }
         }
         
+        // Auto-generate vendor code if not provided
+        if (empty($data["vendor_code"])) {
+            $data["vendor_code"] = $this->generate_vendor_code($data["name"]);
+        }
+
         // Check for duplicate vendor code
         $exists = $wpdb->get_var($wpdb->prepare(
             "SELECT id FROM {$this->table_name} WHERE vendor_code = %s",
@@ -240,6 +245,35 @@ class Vendors {
     /**
      * Log audit trail
      */
+    /**
+     * Generate vendor code from name
+     */
+    private function generate_vendor_code($name) {
+        global $wpdb;
+        
+        // Generate base code from name (first 6 alphanumeric chars)
+        $base = strtoupper(preg_replace("/[^A-Z0-9]/", "", strtoupper($name)));
+        $base = substr($base, 0, 6);
+        
+        if (strlen($base) < 3) {
+            $base = "VEND";
+        }
+        
+        // Find next available number
+        $num = 1;
+        do {
+            $code = $base . "-" . str_pad($num, 3, "0", STR_PAD_LEFT);
+            $exists = $wpdb->get_var($wpdb->prepare(
+                "SELECT id FROM {$this->table_name} WHERE vendor_code = %s",
+                $code
+            ));
+            $num++;
+        } while ($exists && $num < 1000);
+        
+        return $code;
+    }
+    
+
     private function log_audit($vendor_id, $action, $details) {
         global $wpdb;
         $audit_table = $wpdb->prefix . 'fflbro_fin_audit';

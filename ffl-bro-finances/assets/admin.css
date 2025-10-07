@@ -154,3 +154,34 @@
     background: #d1f5d3;
     color: #007017;
 }
+
+/* Sections */
+.fflbro-fin-section {
+    background: white;
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.fflbro-fin-section h2 {
+    margin-top: 0;
+}
+
+.fflbro-fin-filters {
+    margin: 15px 0;
+}
+
+.fflbro-fin-filters .button {
+    margin-right: 5px;
+}
+
+.status-badge.status-pending {
+    background: #fcf3cf;
+    color: #7e6f00;
+}
+
+.status-badge.status-completed {
+    background: #d1f5d3;
+    color: #007017;
+}

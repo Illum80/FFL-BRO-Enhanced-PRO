@@ -17,13 +17,6 @@ class Admin {
         add_action('admin_post_fflbro_fin_save_bill', [$this, 'handle_save_bill']);
         add_action('admin_post_fflbro_fin_delete_bill', [$this, 'handle_delete_bill']);
         add_action('admin_post_fflbro_fin_approve_bill', [$this, 'handle_approve_bill']);
-        
-        // Payment actions
-        add_action('admin_post_fflbro_fin_save_payment', [$this, 'handle_save_payment']);
-        add_action('admin_post_fflbro_fin_process_payment_batch', [$this, 'handle_process_payment_batch']);
-        
-        // Check actions
-        add_action('admin_post_fflbro_fin_generate_checks', [$this, 'handle_generate_checks']);
     }
 
     public function register_menu() {
@@ -69,7 +62,6 @@ class Admin {
         $unpaid_bills = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_fin_bills WHERE status IN ('unpaid', 'approved')");
         $unpaid_amount = $wpdb->get_var("SELECT SUM(total_amount) FROM {$wpdb->prefix}fflbro_fin_bills WHERE status IN ('unpaid', 'approved')") ?: 0;
         $overdue_bills = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_fin_bills WHERE status = 'unpaid' AND due_date < NOW()");
-        $pending_payments = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}fflbro_fin_payments WHERE status = 'pending'");
         
         ?>
         <div class="wrap fflbro-fin-wrap">
@@ -96,11 +88,6 @@ class Admin {
                         <h3>Overdue Bills</h3>
                         <div class="stat-value"><?php echo number_format($overdue_bills); ?></div>
                     </div>
-                    
-                    <div class="stat-card">
-                        <h3>Pending Payments</h3>
-                        <div class="stat-value"><?php echo number_format($pending_payments); ?></div>
-                    </div>
                 </div>
                 
                 <div class="fflbro-fin-quick-actions">
@@ -109,7 +96,6 @@ class Admin {
                     <a href="<?php echo admin_url('admin.php?page=fflbro-fin-bill-edit'); ?>" class="button button-primary">+ Add Bill</a>
                     <a href="<?php echo admin_url('admin.php?page=fflbro-fin-bills&status=unpaid'); ?>" class="button">View Unpaid Bills</a>
                     <a href="<?php echo admin_url('admin.php?page=fflbro-fin-payments'); ?>" class="button">Process Payments</a>
-                    <a href="<?php echo admin_url('admin.php?page=fflbro-fin-checks'); ?>" class="button">Generate Checks</a>
                 </div>
             </div>
         </div>
@@ -217,8 +203,8 @@ class Admin {
                 
                 <table class="form-table">
                     <tr>
-                        <th><label for="vendor_code">Vendor Code (auto-generated if blank)</label></th>
-                        <td><input type="text" name="vendor_code" id="vendor_code" value="" placeholder="Leave blank to auto-generate" class="regular-text"></td>
+                        <th><label for="vendor_code">Vendor Code *</label></th>
+                        <td><input type="text" name="vendor_code" id="vendor_code" value="<?php echo esc_attr($vendor['vendor_code'] ?? ''); ?>" required class="regular-text"></td>
                     </tr>
                     <tr>
                         <th><label for="name">Vendor Name *</label></th>
@@ -559,319 +545,23 @@ class Admin {
     }
 
     // ========================================================================
-    // PAYMENTS
-    // ========================================================================
-    
-    public function render_payments() {
-        require_once FFLBRO_FIN_PATH . 'includes/Services/Payments.php';
-        require_once FFLBRO_FIN_PATH . 'includes/Services/Bills.php';
-        
-        $payments_service = new Services\Payments();
-        $bills_service = new Services\Bills();
-        
-        $status = isset($_GET['status']) ? sanitize_text_field($_GET['status']) : 'pending';
-        $payments = $payments_service->get_all(['status' => $status]);
-        
-        // Get approved bills ready for payment
-        $unpaid_bills = $bills_service->get_all(['status' => 'approved', 'limit' => 20]);
-        
-        ?>
-        <div class="wrap fflbro-fin-wrap">
-            <h1 class="wp-heading-inline">Payments</h1>
-            
-            <?php if (isset($_GET['message'])): ?>
-                <div class="notice notice-success is-dismissible">
-                    <p><?php echo esc_html($this->get_message($_GET['message'])); ?></p>
-                </div>
-            <?php endif; ?>
-            
-            <!-- Ready to Pay Section -->
-            <?php if (!empty($unpaid_bills)): ?>
-            <div class="fflbro-fin-section">
-                <h2>Approved Bills Ready for Payment (<?php echo count($unpaid_bills); ?>)</h2>
-                <form method="post" action="<?php echo admin_url('admin-post.php'); ?>">
-                    <input type="hidden" name="action" value="fflbro_fin_process_payment_batch">
-                    <?php wp_nonce_field('fflbro_fin_process_payment_batch'); ?>
-                    
-                    <table class="wp-list-table widefat fixed striped">
-                        <thead>
-                            <tr>
-                                <th width="40"><input type="checkbox" id="select-all-bills"></th>
-                                <th>Bill #</th>
-                                <th>Vendor</th>
-                                <th>Due Date</th>
-                                <th>Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($unpaid_bills as $bill): 
-                                $is_overdue = (strtotime($bill['due_date']) < time());
-                            ?>
-                                <tr <?php if ($is_overdue) echo 'style="background:#ffe0e0;"'; ?>>
-                                    <td><input type="checkbox" name="bill_ids[]" value="<?php echo $bill['id']; ?>" class="bill-checkbox"></td>
-                                    <td><strong><?php echo esc_html($bill['bill_number']); ?></strong></td>
-                                    <td><?php echo esc_html($bill['vendor_name']); ?></td>
-                                    <td>
-                                        <?php echo date('M j, Y', strtotime($bill['due_date'])); ?>
-                                        <?php if ($is_overdue): ?>
-                                            <span class="overdue-badge">OVERDUE</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td><strong>$<?php echo number_format($bill['total_amount'], 2); ?></strong></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                    
-                    <p class="submit">
-                        <button type="submit" class="button button-primary button-large">Schedule Selected Payments</button>
-                    </p>
-                </form>
-            </div>
-            <?php endif; ?>
-            
-            <!-- Payments List -->
-            <div class="fflbro-fin-section">
-                <h2>Payment History</h2>
-                
-                <div class="fflbro-fin-filters">
-                    <a href="<?php echo admin_url('admin.php?page=fflbro-fin-payments&status=pending'); ?>" class="button <?php echo $status === 'pending' ? 'button-primary' : ''; ?>">Pending</a>
-                    <a href="<?php echo admin_url('admin.php?page=fflbro-fin-payments&status=completed'); ?>" class="button <?php echo $status === 'completed' ? 'button-primary' : ''; ?>">Completed</a>
-                    <a href="<?php echo admin_url('admin.php?page=fflbro-fin-payments&status=all'); ?>" class="button <?php echo $status === 'all' ? 'button-primary' : ''; ?>">All</a>
-                </div>
-                
-                <table class="wp-list-table widefat fixed striped">
-                    <thead>
-                        <tr>
-                            <th>Payment Date</th>
-                            <th>Vendor</th>
-                            <th>Bill #</th>
-                            <th>Amount</th>
-                            <th>Method</th>
-                            <th>Check #</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (empty($payments)): ?>
-                            <tr>
-                                <td colspan="7">No payments found.</td>
-                            </tr>
-                        <?php else: ?>
-                            <?php foreach ($payments as $payment): ?>
-                                <tr>
-                                    <td><?php echo date('M j, Y', strtotime($payment['payment_date'])); ?></td>
-                                    <td><?php echo esc_html($payment['vendor_name']); ?></td>
-                                    <td><?php echo esc_html($payment['bill_number']); ?></td>
-                                    <td><strong>$<?php echo number_format($payment['amount'], 2); ?></strong></td>
-                                    <td><?php echo esc_html(strtoupper($payment['payment_method'])); ?></td>
-                                    <td><?php echo $payment['check_number'] ? '#' . $payment['check_number'] : '-'; ?></td>
-                                    <td><span class="status-badge status-<?php echo esc_attr($payment['status']); ?>"><?php echo esc_html($payment['status']); ?></span></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
-        <script>
-        jQuery(document).ready(function($) {
-            $('#select-all-bills').on('change', function() {
-                $('.bill-checkbox').prop('checked', $(this).prop('checked'));
-            });
-        });
-        </script>
-        <?php
-    }
-    
-    public function handle_process_payment_batch() {
-        check_admin_referer('fflbro_fin_process_payment_batch');
-        if (!current_user_can('ffl_fin_manage')) wp_die('Insufficient permissions');
-        
-        if (empty($_POST['bill_ids'])) {
-            wp_redirect(admin_url('admin.php?page=fflbro-fin-payments&message=no_bills_selected'));
-            exit;
-        }
-        
-        require_once FFLBRO_FIN_PATH . 'includes/Services/Payments.php';
-        $payments_service = new Services\Payments();
-        
-        $count = 0;
-        foreach ($_POST['bill_ids'] as $bill_id) {
-            $result = $payments_service->create([
-                'bill_id' => absint($bill_id),
-                'payment_method' => 'check',
-                'status' => 'pending'
-            ]);
-            
-            if (!is_wp_error($result)) {
-                $count++;
-            }
-        }
-        
-        wp_redirect(admin_url('admin.php?page=fflbro-fin-checks&message=payments_scheduled&count=' . $count));
-        exit;
-    }
-    
-    public function handle_save_payment() {
-        check_admin_referer('fflbro_fin_save_payment');
-        if (!current_user_can('ffl_fin_manage')) wp_die('Insufficient permissions');
-        
-        require_once FFLBRO_FIN_PATH . 'includes/Services/Payments.php';
-        $payments_service = new Services\Payments();
-        
-        $payment_id = isset($_POST['payment_id']) ? absint($_POST['payment_id']) : 0;
-        $result = $payment_id ? $payments_service->update($payment_id, $_POST) : $payments_service->create($_POST);
-        
-        if (is_wp_error($result)) wp_die($result->get_error_message());
-        
-        wp_redirect(admin_url('admin.php?page=fflbro-fin-payments&message=' . ($payment_id ? 'updated' : 'created')));
-        exit;
-    }
-
-    // ========================================================================
-    // CHECKS
-    // ========================================================================
-    
-    public function render_checks() {
-        require_once FFLBRO_FIN_PATH . 'includes/Services/Payments.php';
-        require_once FFLBRO_FIN_PATH . 'includes/Services/Checks.php';
-        
-        $payments_service = new Services\Payments();
-        $checks_service = new Services\Checks();
-        
-        // Get pending payments ready for checks
-        $pending_payments = $payments_service->get_pending_batch();
-        
-        ?>
-        <div class="wrap fflbro-fin-wrap">
-            <h1>Check Generator</h1>
-            
-            <?php if (isset($_GET['message'])): ?>
-                <div class="notice notice-success is-dismissible">
-                    <p>
-                        <?php 
-                        if ($_GET['message'] === 'payments_scheduled') {
-                            echo esc_html($_GET['count']) . ' payments scheduled for check printing.';
-                        } elseif ($_GET['message'] === 'checks_generated') {
-                            echo '✅ ' . esc_html($_GET['count']) . ' checks generated successfully!';
-                        } else {
-                            echo esc_html($this->get_message($_GET['message']));
-                        }
-                        ?>
-                    </p>
-                </div>
-            <?php endif; ?>
-            
-            <?php if (!empty($pending_payments)): ?>
-            <div class="fflbro-fin-section">
-                <h2>Pending Checks (<?php echo count($pending_payments); ?>)</h2>
-                
-                <form method="post" action="<?php echo admin_url('admin-post.php'); ?>">
-                    <input type="hidden" name="action" value="fflbro_fin_generate_checks">
-                    <?php wp_nonce_field('fflbro_fin_generate_checks'); ?>
-                    
-                    <table class="form-table">
-                        <tr>
-                            <th><label for="starting_check_number">Starting Check Number *</label></th>
-                            <td>
-                                <input type="number" name="starting_check_number" id="starting_check_number" value="1001" required class="regular-text">
-                                <p class="description">The first check number in your checkbook</p>
-                            </td>
-                        </tr>
-                    </table>
-                    
-                    <table class="wp-list-table widefat fixed striped">
-                        <thead>
-                            <tr>
-                                <th width="40"><input type="checkbox" id="select-all-payments" checked></th>
-                                <th>Payment Date</th>
-                                <th>Vendor</th>
-                                <th>Bill #</th>
-                                <th>Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($pending_payments as $idx => $payment): ?>
-                                <tr>
-                                    <td><input type="checkbox" name="payment_ids[]" value="<?php echo $payment['id']; ?>" class="payment-checkbox" checked></td>
-                                    <td><?php echo date('M j, Y', strtotime($payment['payment_date'])); ?></td>
-                                    <td><?php echo esc_html($payment['vendor_name']); ?></td>
-                                    <td><?php echo esc_html($payment['bill_number']); ?></td>
-                                    <td><strong>$<?php echo number_format($payment['amount'], 2); ?></strong></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                    
-                    <p class="submit">
-                        <button type="submit" class="button button-primary button-large">🖨️ Generate Checks & Mark Paid</button>
-                    </p>
-                </form>
-            </div>
-            <?php else: ?>
-            <div class="notice notice-info">
-                <p>No pending payments ready for check printing. <a href="<?php echo admin_url('admin.php?page=fflbro-fin-payments'); ?>">Schedule payments first</a>.</p>
-            </div>
-            <?php endif; ?>
-        </div>
-        
-        <script>
-        jQuery(document).ready(function($) {
-            $('#select-all-payments').on('change', function() {
-                $('.payment-checkbox').prop('checked', $(this).prop('checked'));
-            });
-        });
-        </script>
-        <?php
-    }
-    
-    public function handle_generate_checks() {
-        check_admin_referer('fflbro_fin_generate_checks');
-        if (!current_user_can('ffl_fin_manage')) wp_die('Insufficient permissions');
-        
-        if (empty($_POST['payment_ids'])) {
-            wp_redirect(admin_url('admin.php?page=fflbro-fin-checks&message=no_payments_selected'));
-            exit;
-        }
-        
-        $starting_check_number = isset($_POST['starting_check_number']) ? absint($_POST['starting_check_number']) : 0;
-        if ($starting_check_number < 1) {
-            wp_die('Invalid check number');
-        }
-        
-        require_once FFLBRO_FIN_PATH . 'includes/Services/Payments.php';
-        require_once FFLBRO_FIN_PATH . 'includes/Services/Checks.php';
-        
-        $payments_service = new Services\Payments();
-        $checks_service = new Services\Checks();
-        
-        // Assign check numbers
-        $payments_service->assign_check_numbers($_POST['payment_ids'], $starting_check_number);
-        
-        // Generate checks
-        $check_ids = $checks_service->generate_batch($_POST['payment_ids']);
-        
-        // Mark payments as completed
-        foreach ($_POST['payment_ids'] as $payment_id) {
-            $payments_service->mark_completed($payment_id);
-        }
-        
-        wp_redirect(admin_url('admin.php?page=fflbro-fin-checks&message=checks_generated&count=' . count($check_ids)));
-        exit;
-    }
-
-    // ========================================================================
     // PLACEHOLDERS (TODO)
     // ========================================================================
 
+    public function render_payments() {
+        echo '<div class="wrap"><h1>Payments</h1><p>Coming next!</p></div>';
+    }
+
+    public function render_checks() {
+        echo '<div class="wrap"><h1>Check Generator</h1><p>Coming next!</p></div>';
+    }
+
     public function render_exports() {
-        echo '<div class="wrap"><h1>Exports</h1><p>Export to Positive Pay, QuickBooks, Xero, etc. (Coming soon!)</p></div>';
+        echo '<div class="wrap"><h1>Exports</h1><p>Coming next!</p></div>';
     }
 
     public function render_settings() {
-        echo '<div class="wrap"><h1>Settings</h1><p>Bank accounts, MICR, Chart of Accounts configuration (Coming soon!)</p></div>';
+        echo '<div class="wrap"><h1>Settings</h1><p>Coming next!</p></div>';
     }
 
     private function get_message($key) {
@@ -879,9 +569,7 @@ class Admin {
             'created' => 'Item created successfully.',
             'updated' => 'Item updated successfully.',
             'deleted' => 'Item deleted successfully.',
-            'approved' => 'Bill approved successfully.',
-            'no_bills_selected' => 'Please select at least one bill.',
-            'no_payments_selected' => 'Please select at least one payment.'
+            'approved' => 'Bill approved successfully.'
         ];
         return $messages[$key] ?? '';
     }
