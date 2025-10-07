@@ -1,0 +1,13 @@
+/* FFL-BRO Finances Admin Styles */
+.fflbro-fin-admin {
+    max-width: 1200px;
+    margin: 20px auto;
+}
+
+.fflbro-fin-card {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
