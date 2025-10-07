@@ -56,7 +56,20 @@ class FFL_BRO_Form_4473_Processing {
 
     public function render_4473_page() {
         $nonce = wp_create_nonce('fflbro_4473_nonce');
+        
+        // Load React and Form 4473 component
+        wp_enqueue_script("react", "https://unpkg.com/react@18/umd/react.production.min.js", array(), "18", false);
+        wp_enqueue_script("react-dom", "https://unpkg.com/react-dom@18/umd/react-dom.production.min.js", array("react"), "18", false);
+        wp_enqueue_script("babel-standalone", "https://unpkg.com/@babel/standalone/babel.min.js", array("react", "react-dom"), "7", false);
+        wp_enqueue_style("form-4473-css", plugins_url("assets/form-4473/css/form-4473.css", dirname(__FILE__)), array(), "7.3.1");
+        wp_localize_script("jquery", "fflbroForm4473", array("apiUrl" => rest_url("fflbro/v1/"), "nonce" => wp_create_nonce("wp_rest")));
         ?>
+        <script>
+        var fflbroForm4473 = {
+            apiUrl: "<?php echo rest_url('fflbro/v1/'); ?>",
+            nonce: "<?php echo wp_create_nonce('wp_rest'); ?>"
+        };
+        </script>
         <div class="wrap">
             <h1 style="display: flex; align-items: center; gap: 10px;">
                 <span style="font-size: 24px;">📋</span>
@@ -78,7 +91,7 @@ class FFL_BRO_Form_4473_Processing {
                     <button class="button button-hero" onclick="window.open('/wp-json/fflbro/v1/', '_blank')" style="background: #4CAF50; border-color: #4CAF50; color: white; padding: 15px 30px !important; font-size: 16px !important; height: auto !important;">
                         🔗 Test API Endpoints
                     </button>
-                    <button class="button button-hero" onclick="alert('📋 Form list view coming soon!')" style="padding: 15px 30px !important; font-size: 16px !important; height: auto !important;">
+                    <button class="button button-hero" onclick="toggleFormsList()">
                         📋 View All Forms
                     </button>
                     <button class="button button-hero" onclick="if(confirm('Run verification?\\n\\nSSH command:\\n./modules/form-4473/verify-v7.3.1.sh')) { alert('Please run in SSH terminal'); }" style="padding: 15px 30px !important; font-size: 16px !important; height: auto !important;">
@@ -210,8 +223,21 @@ class FFL_BRO_Form_4473_Processing {
             </div>
         </div>
 
+        <div id="form-4473-list-container" style="display:none; margin-top: 30px;"></div>
+        <script type="text/babel" src="<?php echo plugins_url("assets/form-4473/js/form-4473-react.jsx", dirname(__FILE__)); ?>"></script>
         <script>
         jQuery(document).ready(function($) {
+            window.toggleFormsList = function() {
+                const container = document.getElementById("form-4473-list-container");
+                if (container.style.display === "none") {
+                    container.style.display = "block";
+                    container.innerHTML = "<div id='root'></div>";
+                    const root = ReactDOM.createRoot(document.getElementById("root"));
+                    root.render(React.createElement(Form4473Manager));
+                } else {
+                    container.style.display = "none";
+                }
+            };
             $("#create-form-btn").on("click", function() {
                 var btn = $(this);
                 btn.prop("disabled", true).html("⏳ Creating...");
