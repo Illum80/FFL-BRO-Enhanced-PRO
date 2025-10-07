@@ -1031,6 +1031,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/distributors/davidsons.php';
 // Load Form 4473 v7.3.1 Enhanced Features
 $form_4473_modules = array(
     'modules/form-4473/signatures/signature-handler.php',
+    'modules/form-4473/list-handler.php',
     'modules/form-4473/pdf/pdf-generator.php',
     'modules/form-4473/uploads/photo-handler.php',
     'modules/form-4473/email/email-handler.php',
