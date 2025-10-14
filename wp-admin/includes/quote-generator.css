@@ -1,0 +1,415 @@
+/**
+ * Enhanced Multi-Distributor Quote Generator Styles
+ * Save as: includes/quote-generator/quote-generator.css
+ */
+
+.fflbro-quote-generator-container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.quote-generator-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.quote-generator-header h2 {
+    font-size: 2rem;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+}
+
+.quote-generator-header p {
+    color: #718096;
+    font-size: 1.1rem;
+}
+
+/* Tabs */
+.quote-tabs {
+    display: flex;
+    gap: 1rem;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 2rem;
+}
+
+.quote-tabs button {
+    padding: 1rem 2rem;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #718096;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.quote-tabs button:hover {
+    color: #2d3748;
+    background: #f7fafc;
+}
+
+.quote-tabs button.active {
+    color: #2563eb;
+    border-bottom-color: #2563eb;
+}
+
+/* Search Section */
+.search-box {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.search-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.5rem;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+.search-button {
+    padding: 0.75rem 2rem;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.search-button:hover {
+    background: #1d4ed8;
+}
+
+.search-button:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+}
+
+/* Product Cards */
+.search-results {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.no-results {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #718096;
+}
+
+.product-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s;
+}
+
+.product-card:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.product-info h3 {
+    font-size: 1.25rem;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+}
+
+.product-info p {
+    color: #4a5568;
+    margin-bottom: 1rem;
+}
+
+.best-price {
+    display: inline-block;
+    background: #10b981;
+    color: white;
+    padding: 0.25rem 1rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.distributor-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.distributor-option {
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dist-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.dist-info strong {
+    color: #2d3748;
+    font-size: 0.875rem;
+}
+
+.dist-info .price {
+    color: #2563eb;
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+
+.dist-info .stock {
+    color: #10b981;
+    font-size: 0.75rem;
+}
+
+.add-button {
+    padding: 0.5rem 1rem;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.add-button:hover {
+    background: #1d4ed8;
+}
+
+.add-button:disabled {
+    background: #cbd5e0;
+    cursor: not-allowed;
+}
+
+/* Quote Builder */
+.customer-info-section {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.customer-info-section h3 {
+    color: #1a202c;
+    margin-bottom: 1rem;
+}
+
+.customer-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.customer-form input {
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+}
+
+.customer-form input:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+/* Quote Items Table */
+.quote-items-section {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.quote-items-section h3 {
+    color: #1a202c;
+    margin-bottom: 1rem;
+}
+
+.no-items {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #718096;
+}
+
+.quote-items-table {
+    overflow-x: auto;
+}
+
+.quote-items-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.quote-items-table th {
+    background: #f7fafc;
+    padding: 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    color: #4a5568;
+    font-size: 0.875rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.quote-items-table td {
+    padding: 1rem 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.product-cell {
+    min-width: 200px;
+}
+
+.product-cell strong {
+    color: #1a202c;
+}
+
+.product-cell small {
+    color: #718096;
+}
+
+.quantity-input {
+    width: 60px;
+    padding: 0.375rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.375rem;
+    text-align: center;
+}
+
+.remove-button {
+    padding: 0.375rem 0.75rem;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.remove-button:hover {
+    background: #dc2626;
+}
+
+/* Totals */
+.quote-totals {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 2px solid #e2e8f0;
+}
+
+.total-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    font-size: 1rem;
+}
+
+.total-line.grand-total {
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    border-top: 2px solid #e2e8f0;
+    font-size: 1.25rem;
+}
+
+.total-line.grand-total strong {
+    color: #2563eb;
+}
+
+/* Quote Actions */
+.quote-actions {
+    margin-top: 2rem;
+    text-align: right;
+}
+
+.save-button {
+    padding: 1rem 2rem;
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.save-button:hover {
+    background: #059669;
+}
+
+.save-button:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+}
+
+.saved-quote-info {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #d1fae5;
+    border: 1px solid #10b981;
+    border-radius: 0.5rem;
+    color: #065f46;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .search-box {
+        flex-direction: column;
+    }
+
+    .quote-tabs button {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    .distributor-options {
+        grid-template-columns: 1fr;
+    }
+
+    .customer-form {
+        grid-template-columns: 1fr;
+    }
+
+    .quote-items-table {
+        font-size: 0.875rem;
+    }
+
+    .quote-items-table th,
+    .quote-items-table td {
+        padding: 0.5rem 0.375rem;
+    }
+
+    .total-line {
+        font-size: 0.875rem;
+    }
+
+    .total-line.grand-total {
+        font-size: 1rem;
+    }
+}

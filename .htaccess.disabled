@@ -1,0 +1,3 @@
+# MAINTENANCE MODE - Site locked for 2 days
+RewriteEngine On
+RewriteRule ^(.*)$ /maintenance.html [R=503,L]
