@@ -1,0 +1,4 @@
+
+# WordPress debug logs
+wp-content/debug.log
+*.log
