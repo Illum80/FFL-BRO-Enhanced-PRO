@@ -1,4 +1,9 @@
 <?php
+//Begin Really Simple Security key
+define('RSSSL_KEY', 'LQ8zL3BlwsfiM03Iw3nXw7eBZYbKoWu2tuV80Jmt5PKemhY99tL1KfpDET5znbM7');
+//END Really Simple Security key
+define( 'WP_CACHE', true );
+
 /**
  * The base configuration for WordPress
  *
