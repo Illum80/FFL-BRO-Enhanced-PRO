@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TruthSlice area="Distributor" name="Orion" version="1.0.0" date="2025-09-22T07:57:10.783091Z">
+  <BuildLog>
+    <Entry ts="2025-09-22T07:57:10.783104Z">Initialized Orion slice based on Lipsey’s module layout.</Entry>
+  </BuildLog>
+  <Endpoints>
+    <Endpoint name="GetSKU" method="GET" path="/v1/catalog/sku/{sku}">
+      <Auth scheme="APIKey+Secret" headerKey="Authorization" headerVal="Bearer {ORION_API_KEY}" extraHeader="X-Orion-Secret:{ORION_API_SECRET}"/>
+      <Timeout seconds="20"/>
+    </Endpoint>
+  </Endpoints>
+  <FieldMap>
+    <Map from="sku" to="product._sku"/>
+    <Map from="title" to="product.name"/>
+    <Map from="description" to="product.description"/>
+    <Map from="brand" to="product.brand(normalized)"/>
+    <Map from="upc" to="product._upc"/>
+    <Map from="price.msrp" to="product.pricing.regular"/>
+    <Map from="price.map"  to="product.pricing.map"/>
+    <Map from="price.sale" to="product.pricing.sale"/>
+    <Map from="images[]"   to="product.images[]"/>
+    <Map from="quantity"   to="product.stock.qty"/>
+  </FieldMap>
+  <SelectionRules>
+    <PriceRule>sale_over_map_over_msrp</PriceRule>
+  </SelectionRules>
+  <QA>
+    <Check>php -l plugins/ffl-bro-core/includes/sources/class-fflbro-source-orion.php</Check>
+    <Check>bash -n scripts/importers/orion_import_sku.sh</Check>
+    <Check>jq . postman/Orion.postman_collection.json</Check>
+    <Check>jq . postman/Orion.postman_environment.json</Check>
+  </QA>
+  <CLIExamples>
+    <Cmd>wp --allow-root neefeco import ORION-ABC123 --source=orion --featured</Cmd>
+    <Cmd>wp --allow-root wc product list --fields=id,sku,name,price,stock_status --format=table</Cmd>
+  </CLIExamples>
+</TruthSlice>

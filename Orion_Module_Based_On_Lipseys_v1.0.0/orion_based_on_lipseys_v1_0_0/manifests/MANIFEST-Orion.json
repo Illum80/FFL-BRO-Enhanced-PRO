@@ -1,0 +1,41 @@
+{
+  "package": "Orion-Module-Based-On-Lipseys",
+  "generated_utc": "2025-09-22T07:57:10.784680Z",
+  "files": [
+    {
+      "path": "dev_installer/env/orion.env.example",
+      "sha256": "989f157e7ce42efefd69bd3b8b3c1ebec39c58ad85223514ddab91abfdde559f",
+      "bytes": 255
+    },
+    {
+      "path": "scripts/wpja-helpers/wpja-orion.sh",
+      "sha256": "fafb79862e1a73540d434a69584a63f09321e2610d2e0e2eeadc75e52f08d557",
+      "bytes": 383
+    },
+    {
+      "path": "scripts/importers/orion_import_sku.sh",
+      "sha256": "37144f5a42d193052836c6f71846b9a8af7277a1203653a1b3e97fa50b87d7bd",
+      "bytes": 694
+    },
+    {
+      "path": "wordpress/wp-content/plugins/ffl-bro-core/includes/sources/class-fflbro-source-orion.php",
+      "sha256": "d037c8692302955a8b9a06c738e0000021b496523048d3f8844ef8b249d3e54c",
+      "bytes": 3388
+    },
+    {
+      "path": "postman/Orion.postman_collection.json",
+      "sha256": "333af06c0c36df5ecf2ff7ef548ff76816865644f6313f38ecf8e20e378d91e5",
+      "bytes": 853
+    },
+    {
+      "path": "postman/Orion.postman_environment.json",
+      "sha256": "82561de86ec8f23eb8ef2f8c50d08c0bea99134b973fa9a7bf5706db9afc90ad",
+      "bytes": 416
+    },
+    {
+      "path": "truth/ULTIMATE_TRUTH_XML_slice_orion_v1.0.0.xml",
+      "sha256": "0b6d2f603ec9738168f25595e52db5bda18506f54e91224f50b886f2d825b6d4",
+      "bytes": 1717
+    }
+  ]
+}

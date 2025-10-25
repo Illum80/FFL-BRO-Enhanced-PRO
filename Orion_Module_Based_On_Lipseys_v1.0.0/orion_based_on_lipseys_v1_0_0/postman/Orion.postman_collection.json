@@ -1,0 +1,40 @@
+{
+  "info": {
+    "name": "Orion API (FFL-BRO)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get SKU",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{ORION_API_KEY}}"
+          },
+          {
+            "key": "X-Orion-Secret",
+            "value": "{{ORION_API_SECRET}}"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{ORION_API_BASE}}/v1/catalog/sku/{{sku}}",
+          "host": [
+            "{{ORION_API_BASE}}"
+          ],
+          "path": [
+            "v1",
+            "catalog",
+            "sku",
+            "{{sku}}"
+          ]
+        }
+      }
+    }
+  ]
+}
